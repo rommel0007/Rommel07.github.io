@@ -84,7 +84,7 @@
     <h1>Test de la Primera Ley de Newton</h1>
     <div id="timer">Tiempo restante: 2:00</div>
     <div id="quiz"></div>
-    <a class="button" id="startButton" onclick="startQuiz()">Iniciar Test</a>
+    <button class="button" id="startButton" onclick="startQuiz()">Iniciar Test</button>
     <a class="button" id="finishBtn" onclick="finishQuiz()" style="display:none;">Finalizar</a>
     <div id="result"></div>
 
@@ -279,9 +279,9 @@
             secondsLeft = 120;
             document.getElementById('startButton').style.display = 'none';
             document.getElementById('finishBtn').style.display = 'block';
-            selectedQuestions = questions.sort(() => 0.5 - Math.random()).slice(0, 5);
             const quizContainer = document.getElementById('quiz');
-            quizContainer.innerHTML = '';
+            quizContainer.innerHTML = ''; // Limpia el contenido anterior
+            selectedQuestions = questions.sort(() => 0.5 - Math.random()).slice(0, 5);
 
             selectedQuestions.forEach((q, index) => {
                 const questionDiv = document.createElement('div');
