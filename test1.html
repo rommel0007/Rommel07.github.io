@@ -4,57 +4,63 @@
     <meta charset="UTF-8">
     <title>Test de la Primera Ley de Newton</title>
     <style>
-      /* Estilos generales */
-      body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 20px;
-        display: flex; /* Añadimos flexbox para centrar */
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh; /* Aseguramos que el body ocupe toda la altura de la ventana */
-        background-color: #f4f4f4;
-      }
-      .container {
-        width: 100%;
-        max-width: 600px; /* Limitamos el ancho del contenedor principal */
-        padding: 20px;
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        text-align: center; /* Centramos el texto dentro del contenedor */
-      }
-      /* Estilos del test */
-      #quiz {
-        margin-bottom: 20px;
-        text-align: left; /* Alineamos las preguntas y opciones a la izquierda */
-      }
-      #quiz label {
-        display: block; /* Cada label ocupa una línea completa */
-        margin-bottom: 5px; /* Espacio entre opciones */
-      }
-      .button {
-        padding: 10px 20px;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        cursor: pointer;
-        display: inline-block;
-        margin-right: 10px;
-        border-radius: 5px;
-      }
-      .button:hover {
-        background-color: #45a049;
-      }
-      #result {
-        font-weight: bold;
-        font-size: 18px;
-        margin-top: 20px;
-      }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .question {
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        .options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .options li {
+            margin-bottom: 5px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        .options li:hover {
+            background-color: #e0e0e0;
+        }
+        .selected {
+            background-color: #d3d3d3;
+        }
+        .button {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #007BFF;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        #timer {
+            text-align: center;
+            font-size: 18px;
+            margin: 15px;
+        }
+        #result {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 20px;
+        }
     </style>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getFirestore, doc, updateDoc, } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
@@ -67,136 +73,246 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
         window.firestore = db;
         window.doc = doc;
         window.updateDoc = updateDoc;
+
     </script>
 </head>
 <body>
-    <div class="container">  <div id="timer">Tiempo restante: 2:00</div>
-        <div id="quiz"></div>
-        <a class="button" id="generateBtn" onclick="generateQuiz()">¡Realiza el intento!</a>
-        <a class="button" id="finishBtn" onclick="finishQuiz()" style="display:none;">Finalizar</a>
-        <div id="result"></div>
-    </div>
+
+    <h1>Test de la Primera Ley de Newton</h1>
+    <div id="timer">Tiempo restante: 2:00</div>
+    <div id="quiz"></div>
+    <a class="button" id="generateBtn" onclick="generateQuiz()">¡Realiza el intento!</a>
+    <a class="button" id="finishBtn" onclick="finishQuiz()" style="display:none;">Finalizar</a>
+    <div id="result"></div>
+
     <script type="module">
-        //  Obtener el nombre de usuario de localStorage
-        const currentUser = localStorage.getItem('usuario');
-
-        if (!currentUser) {
-            alert("Debes iniciar sesión para realizar el test.");
-            window.location.href = "index.html"; // Redirige al inicio de sesión
-        }
-
-        let intervalId; // Para almacenar el ID del intervalo del temporizador
-        let startTime;
-
-        // Preguntas del test
         const questions = [
             {
-                question: "¿Qué dice la Primera Ley de Newton?",
+                question: "¿Qué establece la Primera Ley de Newton?",
                 options: [
-                    "Toda fuerza produce una aceleración.",
-                    "Un objeto en reposo permanece en reposo y uno en movimiento sigue en movimiento si no hay fuerzas netas.",
-                    "La fuerza es igual a la masa por la aceleración.",
-                    "A toda acción hay una reacción de igual magnitud y sentido opuesto."
+                    "Un objeto cambia su estado solo si una fuerza externa actúa sobre él",
+                    "Todo objeto posee energía cinética",
+                    "La fuerza es igual a la masa por la aceleración",
+                    "Toda acción tiene una reacción igual y opuesta"
                 ],
-                correct: 1
+                answer: 0
             },
             {
-                question: "¿Cuál de estos ejemplos representa mejor la inercia?",
+                question: "¿Qué es la inercia?",
                 options: [
-                    "Un cohete despegando.",
-                    "Una bicicleta frenando en seco.",
-                    "Un pasajero que se va hacia adelante cuando el auto frena.",
-                    "Una pelota que se acelera cuesta abajo."
+                    "La energía potencial almacenada en un objeto",
+                    "La tendencia de un cuerpo a acelerar",
+                    "La propiedad de resistirse al cambio de movimiento",
+                    "La dirección de la fuerza aplicada"
                 ],
-                correct: 2
+                answer: 2
             },
-            // Puedes agregar más preguntas aquí
+            {
+                question: "Si una silla está en reposo, ¿qué debe ocurrir para que se mueva?",
+                options: [
+                    "Aumentar su masa",
+                    "Reducir la fricción",
+                    "Aplicar una fuerza externa",
+                    "Que pase el tiempo"
+                ],
+                answer: 2
+            },
+            {
+                question: "Una sonda espacial sigue en línea recta y velocidad constante porque:",
+                options: [
+                    "Está acelerando",
+                    "No hay fuerzas actuando sobre ella",
+                    "La gravedad la empuja",
+                    "Tiene un cohete encendido"
+                ],
+                answer: 1
+            },
+            {
+                question: "¿Qué ocurre si la suma de las fuerzas sobre un objeto es cero?",
+                options: [
+                    "Se acelera rápidamente",
+                    "Se detiene automáticamente",
+                    "Sigue en reposo o en movimiento constante",
+                    "Pierde masa"
+                ],
+                answer: 2
+            },
+            {
+                question: "¿Cuál de estos es un ejemplo de inercia?",
+                options: [
+                    "Una pelota se detiene al ser pateada",
+                    "Un auto frena por sí solo",
+                    "Un objeto permanece quieto si nadie lo empuja",
+                    "Un avión gira por el viento"
+                ],
+                answer: 2
+            },
+            {
+                question: "¿Qué fuerzas actúan sobre una moto que va a velocidad constante?",
+                options: [
+                    "Solo la gravedad",
+                    "Ninguna",
+                    "Fuerzas opuestas que se equilibran",
+                    "Fuerza positiva únicamente"
+                ],
+                answer: 2
+            },
+            {
+                question: "Si un objeto se mueve a velocidad constante, entonces:",
+                options: [
+                    "La aceleración es cero",
+                    "Se está frenando",
+                    "La inercia desaparece",
+                    "La masa cambia"
+                ],
+                answer: 0
+            },
+            {
+                question: "¿Qué representa un diagrama de cuerpo libre?",
+                options: [
+                    "Un objeto con velocidad",
+                    "Fuerzas aplicadas sobre un objeto",
+                    "La dirección del viento",
+                    "Un análisis térmico"
+                ],
+                answer: 1
+            },
+            {
+                question: "¿Qué ocurre si un objeto no experimenta ninguna fuerza neta?",
+                options: [
+                    "Se deforma",
+                    "Se detiene de inmediato",
+                    "Mantiene su estado de movimiento",
+                    "Se acelera"
+                ],
+                answer: 2
+            }
         ];
 
-        function generateQuiz() {
-            const quizDiv = document.getElementById('quiz');
-            quizDiv.innerHTML = '';
-            questions.forEach((q, index) => {
-                const questionElem = document.createElement('div');
-                questionElem.innerHTML = `<p>${index + 1}. ${q.question}</p>`;
-                q.options.forEach((opt, i) => {
-                    questionElem.innerHTML += `
-                        <label>
-                            <input type="radio" name="q${index}" value="${i}"> ${opt}
-                        </label><br>`;
-                });
-                quizDiv.appendChild(questionElem);
-            });
+        let selectedQuestions = [];
+        let userAnswers = [];
+        let quizStarted = false;
+        let timerInterval;
+        let secondsLeft = 120;
+        let startTime;
+        let currentUser; // Variable para almacenar el nombre de usuario
 
-            document.getElementById('finishBtn').style.display = 'inline-block';
-            startTimer(); // Iniciar el temporizador cuando se genera el quiz
-            startTime = new Date();
+        // Función para obtener el nombre de usuario del localStorage
+        function getUsuario() {
+            currentUser = localStorage.getItem('usuario');
+            if (!currentUser) {
+                alert('Por favor, inicie sesión para realizar el test.');
+                window.location.href = 'index.html';
+            }
+            return currentUser;
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(secondsLeft / 60);
+            const seconds = secondsLeft % 60;
+            document.getElementById('timer').textContent = `Tiempo restante: ${minutes}:${seconds.toString().padStart(2, '0')}`;
         }
 
         function startTimer() {
-            let timeRemaining = 120; // 2 minutos en segundos
-            const timerDisplay = document.getElementById('timer');
-            timerDisplay.textContent = `Tiempo restante: ${formatTime(timeRemaining)}`;
-
-            intervalId = setInterval(() => {
-                timeRemaining--;
-                timerDisplay.textContent = `Tiempo restante: ${formatTime(timeRemaining)}`;
-                if (timeRemaining <= 0) {
-                    clearInterval(intervalId);
-                    finishQuiz(); // Finalizar el quiz si se acaba el tiempo
-                    alert("Se acabó el tiempo!");
+            secondsLeft = 120;
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                secondsLeft--;
+                updateTimerDisplay();
+                if (secondsLeft <= 0) {
+                    clearInterval(timerInterval);
+                    finishQuiz(true);
                 }
             }, 1000);
         }
 
-        function formatTime(seconds) {
-            const minutes = Math.floor(seconds / 60);
-            const remainingSeconds = seconds % 60;
-            return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
-        }
 
-        async function finishQuiz() {
-            clearInterval(intervalId); // Detener el temporizador
+
+        async function finishQuiz(timeOut = false) {
+            clearInterval(timerInterval);
+            document.getElementById('finishBtn').style.display = 'none';
             let score = 0;
 
-            questions.forEach((q, index) => {
-                const radios = document.getElementsByName(`q${index}`);
-                for (let i = 0; i < radios.length; i++) {
-                    if (radios[i].checked && parseInt(radios[i].value) === q.correct) {
-                        score++;
-                        break;
-                    }
+            selectedQuestions.forEach((q, index) => {
+                if (userAnswers[index] === q.answer) {
+                    score += 2;
                 }
             });
 
             const endTime = new Date();
-            const timeDiff = endTime.getTime() - startTime.getTime();
-            const minutesSpent = Math.floor(timeDiff / 60000);
-            const secondsSpent = Math.floor((timeDiff % 60000) / 1000);
-            const timeSpent = `${minutesSpent}:${secondsSpent < 10 ? '0' : ''}${secondsSpent}`;
+            const elapsedTime = Math.floor((endTime - startTime) / 1000);
+            const minutes = Math.floor(elapsedTime / 60);
+            const seconds = elapsedTime % 60;
+            const timeSpent = `${minutes}m ${seconds}s`;
 
+            const resultText = `Puntaje: ${score}/10<br>Tiempo usado: ${minutes}m ${seconds}s` +
+                (timeOut ? "<br><span style='color:red;'>Tiempo agotado</span>" : "");
 
-            const testData = {
-                score: score,
-                time: timeSpent,
-                timestamp: endTime.toISOString()
-            };
+            document.getElementById('result').innerHTML = resultText;
 
             try {
-                const userRef = window.doc(window.firestore, "usuarios", currentUser);
-                await window.updateDoc(userRef, {
-                    test1:  testData // Guarda los resultados en el campo test1
+                const usuario = getUsuario();
+                const usuarioRef = window.doc(window.firestore, "usuarios", usuario);
+                await window.updateDoc(usuarioRef, {
+                    test1: {  // Guarda los datos del test1
+                        score: score,
+                        time: timeSpent,
+                        timestamp: endTime
+                    }
                 });
+                alert('Resultados guardados correctamente');
 
-                document.getElementById('result').innerHTML = `Puntaje: ${score}/${questions.length}<br>Tiempo usado: ${timeSpent}`;
             } catch (error) {
-                alert("Error al guardar los resultados: " + error.message);
+                console.error("Error al guardar en Firestore:", error);
+                alert('Error al guardar los resultados. Por favor, inténtelo de nuevo.');
             }
         }
+
+        function generateQuiz() {
+            if (quizStarted) return;
+            quizStarted = true;
+            userAnswers = [];
+            startTime = new Date();
+            secondsLeft = 120;
+            document.getElementById('generateBtn').style.display = 'none';
+            document.getElementById('finishBtn').style.display = 'block';
+            selectedQuestions = questions.sort(() => 0.5 - Math.random()).slice(0, 5);
+            const quizContainer = document.getElementById('quiz');
+            quizContainer.innerHTML = '';
+
+            selectedQuestions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                const questionTitle = document.createElement('h3');
+                questionTitle.textContent = `Pregunta ${index + 1}: ${q.question}`;
+                questionDiv.appendChild(questionTitle);
+
+                const optionsList = document.createElement('ul');
+                optionsList.className = 'options';
+
+                q.options.forEach((option, i) => {
+                    const optionItem = document.createElement('li');
+                    optionItem.textContent = option;
+                    optionItem.onclick = () => {
+                        userAnswers[index] = i;
+                        [...optionsList.children].forEach(li => li.classList.remove('selected'));
+                        optionItem.classList.add('selected');
+                    };
+                    optionsList.appendChild(optionItem);
+                });
+
+                questionDiv.appendChild(optionsList);
+                quizContainer.appendChild(questionDiv);
+            });
+
+            startTimer();
+        }
+
+        //Verifica que el usuario este logeado
+        getUsuario();
     </script>
 </body>
 </html>
