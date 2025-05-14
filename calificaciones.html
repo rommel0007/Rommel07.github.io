@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tabla de Posiciones</title>
+</head>
+<body>
+  <h1>Tabla de Posiciones</h1>
+  <div id="tabla"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
+      authDomain: "base-de-datos-usuarios-433da.firebaseapp.com",
+      projectId: "base-de-datos-usuarios-433da",
+      storageBucket: "base-de-datos-usuarios-433da.firebasestorage.app",
+      messagingSenderId: "563969031549",
+      appId: "1:563969031549:web:66c35b0e769d73b31d2014"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function cargarResultados() {
+      const snapshot = await getDocs(collection(db, "usuarios"));
+      const usuarios = [];
+
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const r = data.resultados || {};
+
+        let totalNota = 0, totalTiempo = 0, n = 0;
+        ["test1", "test2", "test3"].forEach(k => {
+          if (r[k]) {
+            totalNota += r[k].nota || 0;
+            totalTiempo += r[k].tiempo || 0;
+            n++;
+          }
+        });
+
+        const promedioNota = n ? totalNota / n : 0;
+        const promedioTiempo = n ? totalTiempo / n : 0;
+
+        usuarios.push({
+          nombre: data.nombre,
+          promedioNota,
+          promedioTiempo,
+          resultados: r
+        });
+      });
+
+      usuarios.sort((a, b) => {
+        if (b.promedioNota !== a.promedioNota) return b.promedioNota - a.promedioNota;
+        return a.promedioTiempo - b.promedioTiempo;
+      });
+
+      mostrarTabla(usuarios);
+    }
+
+    function mostrarTabla(usuarios) {
+      let html = "<table border='1'><tr><th>Posición</th><th>Nombre</th><th>TEST1</th><th>TEST2</th><th>TEST3</th><th>Nota Promedio</th><th>Tiempo Promedio (seg)</th></tr>";
+
+      usuarios.forEach((u, i) => {
+        const r = u.resultados;
+        html += `<tr>
+          <td>${i + 1}</td>
+          <td>${u.nombre}</td>
+          <td>${mostrar(r.test1)}</td>
+          <td>${mostrar(r.test2)}</td>
+          <td>${mostrar(r.test3)}</td>
+          <td>${u.promedioNota.toFixed(2)}</td>
+          <td>${u.promedioTiempo.toFixed(2)}</td>
+        </tr>`;
+      });
+
+      html += "</table>";
+      document.getElementById("tabla").innerHTML = html;
+    }
+
+    function mostrar(test) {
+      return test ? `Nota: ${test.nota}, Tiempo: ${test.tiempo}s` : "N/A";
+    }
+
+    cargarResultados();
+  </script>
+</body>
+</html>
