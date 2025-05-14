@@ -1,256 +1,232 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Test de la Segunda Ley de Newton</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-        .question {
-            margin-bottom: 20px;
-        }
-        .options {
-            list-style: none;
-            padding: 0;
-        }
-        .options li {
-            padding: 5px;
-            border: 1px solid #ccc;
-            margin-top: 5px;
-            cursor: pointer;
-        }
-        .options li.selected {
-            background-color: #cce5ff;
-        }
-        .button {
-            display: inline-block;
-            margin: 10px 5px;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        #result {
-            font-weight: bold;
-            margin-top: 20px;
-        }
-        #timer {
-            text-align: center;
-            font-size: 18px;
-            margin: 15px;
-        }
-    </style>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, setDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+<meta charset="UTF-8" />
+<title>Test Segunda Ley Newton</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; }
+  .question { margin-bottom: 20px; }
+  .options { list-style: none; padding: 0; }
+  .options li {
+    border: 1px solid #ccc;
+    padding: 8px;
+    margin-top: 5px;
+    cursor: pointer;
+  }
+  .options li.selected { background-color: #cce5ff; }
+  .button {
+    margin: 10px 5px;
+    padding: 10px 20px;
+    background: #007bff; color: white;
+    border-radius: 5px; cursor: pointer;
+    display: inline-block;
+  }
+  #timer { font-weight: bold; margin-bottom: 15px; font-size: 18px; }
+  #result { margin-top: 20px; font-weight: bold; }
+</style>
+<script type="module">
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
-            authDomain: "base-de-datos-usuarios-433da.firebaseapp.com",
-            projectId: "base-de-datos-usuarios-433da",
-            storageBucket: "base-de-datos-usuarios-433da.appspot.com",
-            messagingSenderId: "563969031549",
-            appId: "1:563969031549:web:66c35b0e769d73b31d2014"
-        };
+// Firebase imports
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        window.firestore = db;
+const firebaseConfig = {
+  apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
+  authDomain: "base-de-datos-usuarios-433da.firebaseapp.com",
+  projectId: "base-de-datos-usuarios-433da",
+  storageBucket: "base-de-datos-usuarios-433da.appspot.com",
+  messagingSenderId: "563969031549",
+  appId: "1:563969031549:web:66c35b0e769d73b31d2014"
+};
 
-        const questions = [
-            {
-                question: "¿Cuál es la fórmula de la segunda ley de Newton?",
-                options: ["F = m·a", "E = m·c²", "V = I·R", "P = m·g"],
-                answer: 0
-            },
-            {
-                question: "Si duplicas la masa, ¿qué pasa con la fuerza necesaria para mantener la misma aceleración?",
-                options: ["Se mantiene igual", "Se duplica", "Se reduce a la mitad", "No cambia"],
-                answer: 1
-            },
-            {
-                question: "¿Qué unidad se usa para medir la fuerza en el SI?",
-                options: ["Joule", "Newton", "Pascal", "Watt"],
-                answer: 1
-            },
-            {
-                question: "Un objeto de 4 kg acelera a 3 m/s². ¿Cuál es la fuerza aplicada?",
-                options: ["7 N", "1.33 N", "12 N", "0.75 N"],
-                answer: 2
-            },
-            {
-                question: "¿Qué relación existe entre fuerza neta y aceleración?",
-                options: ["Son inversamente proporcionales", "No están relacionadas", "La fuerza neta causa aceleración", "La aceleración causa masa"],
-                answer: 2
-            },
-            {
-                question: "¿Cuál de estas opciones representa una fuerza de 10 N aplicada a un objeto de 2 kg?",
-                options: ["10 m/s²", "5 m/s²", "20 m/s²", "2 m/s²"],
-                answer: 1
-            },
-            {
-                question: "Si un objeto no tiene fuerza neta, su aceleración es...",
-                options: ["Máxima", "Mínima", "Cero", "Infinita"],
-                answer: 2
-            },
-            {
-                question: "¿Cómo afecta la fuerza neta a un objeto en reposo?",
-                options: ["Lo mantiene en reposo", "Lo acelera", "Lo detiene", "Disminuye su masa"],
-                answer: 1
-            },
-            {
-                question: "¿Qué indica una aceleración negativa?",
-                options: ["Aumento de velocidad", "Disminución de masa", "Disminución de velocidad", "Aceleración constante"],
-                answer: 2
-            },
-            {
-                question: "¿Qué pasa si se aplica una fuerza constante a un objeto sin fricción?",
-                options: ["Acelera continuamente", "Se detiene", "Se mueve a velocidad constante", "Pierde masa"],
-                answer: 0
-            }
-        ];
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-        let selectedQuestions = [];
-        let userAnswers = [];
-        let quizStarted = false;
-        let timerInterval;
-        let secondsLeft = 120;
-        let startTime;
-        let currentUser;
+const questions = [
+  { question: "¿Cuál es la fórmula de la segunda ley de Newton?", options: ["F = m·a", "E = m·c²", "V = I·R", "P = m·g"], answer: 0 },
+  { question: "Si duplicas la masa, ¿qué pasa con la fuerza necesaria para mantener la misma aceleración?", options: ["Se mantiene igual", "Se duplica", "Se reduce a la mitad", "No cambia"], answer: 1 },
+  { question: "¿Qué unidad se usa para medir la fuerza en el SI?", options: ["Joule", "Newton", "Pascal", "Watt"], answer: 1 },
+  { question: "Un objeto de 4 kg acelera a 3 m/s². ¿Cuál es la fuerza aplicada?", options: ["7 N", "1.33 N", "12 N", "0.75 N"], answer: 2 },
+  { question: "¿Qué relación existe entre fuerza neta y aceleración?", options: ["Son inversamente proporcionales", "No están relacionadas", "La fuerza neta causa aceleración", "La aceleración causa masa"], answer: 2 },
+  { question: "¿Cuál de estas opciones representa una fuerza de 10 N aplicada a un objeto de 2 kg?", options: ["10 m/s²", "5 m/s²", "20 m/s²", "2 m/s²"], answer: 1 },
+  { question: "Si un objeto no tiene fuerza neta, su aceleración es...", options: ["Máxima", "Mínima", "Cero", "Infinita"], answer: 2 },
+  { question: "¿Cómo afecta la fuerza neta a un objeto en reposo?", options: ["Lo mantiene en reposo", "Lo acelera", "Lo detiene", "Disminuye su masa"], answer: 1 },
+  { question: "¿Qué indica una aceleración negativa?", options: ["Aumento de velocidad", "Disminución de masa", "Disminución de velocidad", "Aceleración constante"], answer: 2 },
+  { question: "¿Qué pasa si se aplica una fuerza constante a un objeto sin fricción?", options: ["Acelera continuamente", "Se detiene", "Se mueve a velocidad constante", "Pierde masa"], answer: 0 }
+];
 
-        function getUsuario() {
-            currentUser = localStorage.getItem('usuario');
-            if (!currentUser) {
-                alert('Por favor, inicie sesión para realizar el test.');
-                window.location.href = 'index.html';
-            }
-            return currentUser;
-        }
+let selectedQuestions = [];
+let userAnswers = [];
+let timerId;
+let secondsLeft = 120;
+let quizStarted = false;
+let startTime;
+let currentUser;
 
-        function updateTimerDisplay() {
-            const minutes = Math.floor(secondsLeft / 60);
-            const seconds = secondsLeft % 60;
-            document.getElementById('timer').textContent = `Tiempo restante: ${minutes}:${seconds.toString().padStart(2, '0')}`;
-        }
+function getUsuario() {
+  currentUser = localStorage.getItem("usuario");
+  if (!currentUser) {
+    alert("Por favor, inicie sesión para realizar el test.");
+    window.location.href = "index.html";
+    return null;
+  }
+  return currentUser;
+}
 
-        function startTimer() {
-            secondsLeft = 120;
-            updateTimerDisplay();
-            timerInterval = setInterval(() => {
-                secondsLeft--;
-                updateTimerDisplay();
-                if (secondsLeft <= 0) {
-                    clearInterval(timerInterval);
-                    finishQuiz(true);
-                }
-            }, 1000);
-        }
+function updateTimerDisplay() {
+  const minutes = Math.floor(secondsLeft / 60);
+  const seconds = secondsLeft % 60;
+  document.getElementById("timer").textContent = `Tiempo restante: ${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
 
-        async function finishQuiz(timeOut = false) {
-            clearInterval(timerInterval);
-            document.getElementById('finishBtn').style.display = 'none';
+function timerTick() {
+  secondsLeft--;
+  updateTimerDisplay();
+  if (secondsLeft <= 0) {
+    clearInterval(timerId);
+    alert("Se acabó el tiempo!");
+    finishQuiz(true);
+  }
+}
 
-            let score = 0;
-            selectedQuestions.forEach((q, index) => {
-                if (userAnswers[index] === q.answer) {
-                    score += 2;
-                }
-            });
+function startTimer() {
+  secondsLeft = 120;
+  updateTimerDisplay();
+  timerId = setInterval(timerTick, 1000);
+}
 
-            const endTime = new Date();
-            const elapsedTime = Math.floor((endTime - startTime) / 1000);
-            const minutes = Math.floor(elapsedTime / 60);
-            const seconds = elapsedTime % 60;
-            const timeSpent = `${minutes}m ${seconds}s`;
+function renderQuiz() {
+  const quizDiv = document.getElementById("quiz");
+  quizDiv.innerHTML = "";
+  selectedQuestions.forEach((q, idx) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+    const h3 = document.createElement("h3");
+    h3.textContent = `Pregunta ${idx + 1}: ${q.question}`;
+    qDiv.appendChild(h3);
 
-            const resultText = `Puntaje: ${score}/10<br>Tiempo usado: ${timeSpent}` +
-                (timeOut ? "<br><span style='color:red;'>Tiempo agotado</span>" : "");
+    const ul = document.createElement("ul");
+    ul.className = "options";
 
-            document.getElementById('result').innerHTML = resultText;
+    q.options.forEach((opt, i) => {
+      const li = document.createElement("li");
+      li.textContent = opt;
+      li.onclick = () => {
+        userAnswers[idx] = i;
+        // Quitar selección previa
+        Array.from(ul.children).forEach(c => c.classList.remove("selected"));
+        li.classList.add("selected");
+      };
+      ul.appendChild(li);
+    });
 
-            try {
-                const usuario = getUsuario();
-                const usuarioRef = doc(window.firestore, "usuarios", usuario);
+    qDiv.appendChild(ul);
+    quizDiv.appendChild(qDiv);
+  });
+}
 
-                const docSnap = await getDoc(usuarioRef);
-                if (docSnap.exists()) {
-                    await updateDoc(usuarioRef, {
-                        "tests.test2": {
-                            score: score,
-                            time: timeSpent,
-                            timestamp: endTime
-                        }
-                    });
-                } else {
-                    await setDoc(usuarioRef, {
-                        tests: {
-                            test2: {
-                                score: score,
-                                time: timeSpent,
-                                timestamp: endTime
-                            }
-                        }
-                    });
-                }
+async function finishQuiz(timeOut = false) {
+  if (!quizStarted) return;
+  quizStarted = false;
+  clearInterval(timerId);
 
-                alert('Resultados guardados correctamente. Puntaje: ' + score + ' Tiempo: ' + timeSpent);
-            } catch (error) {
-                console.error("Error al guardar en Firestore:", error);
-                alert('Error al guardar los resultados. Por favor, inténtelo de nuevo.');
-            }
-        }
+  // Ocultar botones
+  document.getElementById("startButton").style.display = "none";
+  document.getElementById("finishBtn").style.display = "none";
 
-        function startQuiz() {
-            if (quizStarted) return;
-            quizStarted = true;
-            userAnswers = [];
-            startTime = new Date();
-            secondsLeft = 120;
-            document.getElementById('startButton').style.display = 'none';
-            document.getElementById('finishBtn').style.display = 'inline-block';
-            document.getElementById('result').innerHTML = '';
-            const quizContainer = document.getElementById('quiz');
-            quizContainer.innerHTML = '';
-            selectedQuestions = questions.sort(() => 0.5 - Math.random()).slice(0, 5);
+  // Calcular puntaje
+  let score = 0;
+  selectedQuestions.forEach((q, idx) => {
+    if (userAnswers[idx] === q.answer) score += 2;
+  });
 
-            selectedQuestions.forEach((q, index) => {
-                const questionDiv = document.createElement('div');
-                questionDiv.className = 'question';
-                const questionTitle = document.createElement('h3');
-                questionTitle.textContent = `Pregunta ${index + 1}: ${q.question}`;
-                questionDiv.appendChild(questionTitle);
+  const endTime = new Date();
+  const timeUsedSeconds = Math.floor((endTime - startTime) / 1000);
+  const minutes = Math.floor(timeUsedSeconds / 60);
+  const seconds = timeUsedSeconds % 60;
+  const timeUsedStr = `${minutes}m ${seconds}s`;
 
-                const optionsList = document.createElement('ul');
-                optionsList.className = 'options';
+  // Mostrar resultado
+  const resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = `Puntaje: ${score} / 10<br>Tiempo usado: ${timeUsedStr}` + (timeOut ? "<br><span style='color:red'>Se agotó el tiempo</span>" : "");
 
-                q.options.forEach((option, i) => {
-                    const optionItem = document.createElement('li');
-                    optionItem.textContent = option;
-                    optionItem.onclick = () => {
-                        userAnswers[index] = i;
-                        [...optionsList.children].forEach(li => li.classList.remove('selected'));
-                        optionItem.classList.add('selected');
-                    };
-                    optionsList.appendChild(optionItem);
-                });
+  // Guardar en Firestore
+  try {
+    const usuario = getUsuario();
+    if (!usuario) return;
 
-                questionDiv.appendChild(optionsList);
-                quizContainer.appendChild(questionDiv);
-            });
+    const usuarioRef = doc(db, "usuarios", usuario);
+    const docSnap = await getDoc(usuarioRef);
 
-            startTimer();
-        }
+    const testData = {
+      score: score,
+      time: timeUsedStr,
+      timestamp: endTime.toISOString()
+    };
 
-        window.onload = () => {
-            getUsuario();
-            document.getElementById('startButton').addEventListener('click', startQuiz);
-            document.getElementById('finishBtn').addEventListener('click', () => finishQuiz(false));
-        }
-    </script>
+    if (docSnap.exists()) {
+      // Actualizar campo tests.test2
+      await updateDoc(usuarioRef, {
+        "tests.test2": testData
+      });
+    } else {
+      // Crear documento con tests.test2
+      await setDoc(usuarioRef, {
+        tests: { test2: testData }
+      });
+    }
+
+    alert("Resultados guardados correctamente.");
+  } catch (e) {
+    console.error("Error guardando resultados:", e);
+    alert("Error guardando resultados. Intente nuevamente.");
+  }
+}
+
+function startQuiz() {
+  if (quizStarted) return;
+  if (!getUsuario()) return;
+
+  quizStarted = true;
+  userAnswers = [];
+  startTime = new Date();
+
+  // Mostrar botones
+  document.getElementById("startButton").style.display = "none";
+  document.getElementById("finishBtn").style.display = "inline-block";
+
+  // Elegir 5 preguntas aleatorias
+  selectedQuestions = [...questions].sort(() => Math.random() - 0.5).slice(0, 5);
+
+  renderQuiz();
+  startTimer();
+
+  // Limpiar resultados previos
+  document.getElementById("result").innerHTML = "";
+}
+
+window.onload = () => {
+  document.getElementById("startButton").onclick = startQuiz;
+  document.getElementById("finishBtn").onclick = () => finishQuiz(false);
+  document.getElementById("finishBtn").style.display = "none";
+
+  getUsuario(); // Verifica usuario o redirige
+};
+
+</script>
+</head>
+<body>
+
+<h1>Test: Segunda Ley de Newton</h1>
+
+<div id="timer">Tiempo restante: 2:00</div>
+
+<div id="quiz"></div>
+
+<button id="startButton" class="button">Iniciar Test</button>
+<button id="finishBtn" class="button">Finalizar</button>
+
+<div id="result"></div>
+
 </body>
 </html>
-``
