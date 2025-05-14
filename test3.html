@@ -6,7 +6,66 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   <style>
-    /* ... Estilos igual que antes ... */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f9f9f9;
+    }
+
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+
+    #timer {
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 10px 20px;
+      margin: 10px;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .question {
+      background-color: #fff;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+
+    .question h3 {
+      margin-top: 0;
+    }
+
+    .options li {
+      list-style: none;
+      margin: 5px 0;
+      padding: 8px;
+      background-color: #eee;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .options li.selected {
+      background-color: #cce5ff;
+      font-weight: bold;
+    }
+
+    #result {
+      text-align: center;
+      font-size: 18px;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
@@ -129,7 +188,6 @@
         (timeOut ? "<br><span style='color:red;'>Tiempo agotado</span>" : "");
       document.getElementById('result').innerHTML = resultText;
 
-      // Guardar en Firebase
       const nombreUsuario = localStorage.getItem("nombreUsuario") || "Desconocido";
       db.collection("resultados").add({
         nombre: nombreUsuario,
@@ -147,3 +205,4 @@
 
 </body>
 </html>
+
