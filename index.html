@@ -1,149 +1,149 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Formulario de Inicio de Sesión</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio de Sesión</title>
 
-  <!-- Firebase SDK -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-    // Configuración Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
-      authDomain: "base-de-datos-usuarios-433da.firebaseapp.com",
-      projectId: "base-de-datos-usuarios-433da",
-      storageBucket: "base-de-datos-usuarios-433da.appspot.com",
-      messagingSenderId: "563969031549",
-      appId: "1:563969031549:web:66c35b0e769d73b31d2014"
-    };
+        // Configuración Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
+            authDomain: "base-de-datos-usuarios-433da.firebaseapp.com",
+            projectId: "base-de-datos-usuarios-433da",
+            storageBucket: "base-de-datos-usuarios-433da.appspot.com",
+            messagingSenderId: "563969031549",
+            appId: "1:563969031549:web:66c35b0e769d73b31d2014"
+        };
 
-    // Inicializar Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-    // Guardar el objeto Firestore en global para acceder desde fuera
-    window.firestore = db;
-    window.setDoc = setDoc;
-    window.doc = doc;
-  </script>
+        // Guardar el objeto Firestore en global para acceder desde fuera
+        window.firestore = db;
+        window.setDoc = setDoc;
+        window.doc = doc;
+    </script>
 
-  <script>
-    async function verificarUsuario() {
-      const nombreUsuario = document.getElementById("usuario").value.trim();
-      if (nombreUsuario !== "") {
-        try {
-          // Guardar en Firestore en la colección "usuarios" con ID = nombreUsuario
-          await window.setDoc(window.doc(window.firestore, "usuarios", nombreUsuario), {
-            nombre: nombreUsuario,
-            tests: []
-          });
+    <script>
+        async function verificarUsuario() {
+            const nombreUsuario = document.getElementById("usuario").value.trim();
+            if (nombreUsuario !== "") {
+                try {
+                    // Guardar en Firestore en la colección "usuarios" con ID = nombreUsuario
+                    const usuarioRef = window.doc(window.firestore, "usuarios", nombreUsuario);
+                    await window.setDoc(usuarioRef, {
+                        nombre: nombreUsuario,
+                        // Inicializamos el array de tests para este usuario
+                        tests: []
+                    });
 
-          // ✅ Guardar nombre en localStorage para usar en otras páginas
-          localStorage.setItem("usuario", nombreUsuario);
+                    // Guardar nombre en localStorage para usar en otras páginas
+                    localStorage.setItem("usuario", nombreUsuario);
 
-          // Redirigir
-          window.location.href = "seleccion.html";
-        } catch (error) {
-          alert("Error al guardar el usuario: " + error.message);
+                    // Redirigir
+                    window.location.href = "seleccion.html";
+                } catch (error) {
+                    alert("Error al guardar el usuario: " + error.message);
+                }
+            } else {
+                alert("Por favor, ingresa tu nombre de usuario.");
+            }
         }
-      } else {
-        alert("Por favor, ingresa tu nombre de usuario.");
-      }
-    }
-  </script>
+    </script>
 
-  <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: #f2f2f2;
-    }
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f2f2f2;
+        }
 
-    .deslizar {
-      animation: deslizarAbajo 1s ease-out forwards;
-    }
+        .deslizar {
+            animation: deslizarAbajo 1s ease-out forwards;
+        }
 
-    @keyframes deslizarAbajo {
-      from {
-        transform: translateY(-100px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
+        @keyframes deslizarAbajo {
+            from {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
 
-    .elemento {
-      width: 300px;
-      padding: 60px;
-      border: 10px solid #e3e3e3;
-      border-radius: 20px;
-      background-color: #f4f4f4;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
+        .elemento {
+            width: 300px;
+            padding: 60px;
+            border: 10px solid #e3e3e3;
+            border-radius: 20px;
+            background-color: #f4f4f4;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
 
-    .app-title h1 {
-      margin: 0 0 20px 0;
-    }
+        .app-title h1 {
+            margin: 0 0 20px 0;
+        }
 
-    .login-form {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-    }
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
 
-    .login-field {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 14px;
-    }
+        .login-field {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
 
-    .login-button {
-      padding: 12px 24px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
+        .login-button {
+            padding: 12px 24px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
 
-    .login-button:hover {
-      background-color: #45a049;
-    }
-  </style>
+        .login-button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 
 <body>
-  <div class="deslizar">
-    <div class="elemento">
-      <div class="app-title">
-        <h1>
-          <img src="usuarioo.png" alt="Usuario" width="200" height="200">
-        </h1>
-      </div>
-      <div class="login-form">
-        <input type="text" class="login-field" id="usuario" placeholder="Usuario">
-        <button class="login-button" onclick="verificarUsuario()">Entrar</button>
-      </div>
+    <div class="deslizar">
+        <div class="elemento">
+            <div class="app-title">
+                <h1>
+                    <img src="usuarioo.png" alt="Usuario" width="200" height="200">
+                </h1>
+            </div>
+            <div class="login-form">
+                <input type="text" class="login-field" id="usuario" placeholder="Usuario">
+                <button class="login-button" onclick="verificarUsuario()">Entrar</button>
+            </div>
+        </div>
     </div>
-  </div>
 </body>
 </html>
-
