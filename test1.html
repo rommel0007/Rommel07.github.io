@@ -84,7 +84,7 @@
     <h1>Test de la Primera Ley de Newton</h1>
     <div id="timer">Tiempo restante: 2:00</div>
     <div id="quiz"></div>
-    <button class="button" id="startButton" onclick="startQuiz()">Iniciar Test</button>
+    <button class="button" id="startButton" >Iniciar Test</button>
     <a class="button" id="finishBtn" onclick="finishQuiz()" style="display:none;">Finalizar</a>
     <div id="result"></div>
 
@@ -314,8 +314,8 @@
         //Verifica que el usuario este logeado y empieza el test
         window.onload = () => {
             getUsuario();
+            document.getElementById('startButton').addEventListener('click', startQuiz);
         }
     </script>
 </body>
 </html>
-
