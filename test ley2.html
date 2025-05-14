@@ -46,7 +46,7 @@
     </style>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, setDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
@@ -60,21 +60,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         window.firestore = db;
-        window.collection = collection;
-        window.addDoc = addDoc;
 
-    </script>
-</head>
-<body>
-
-    <h1>Test de la Segunda Ley de Newton</h1>
-    <div id="timer">Tiempo restante: 2:00</div>
-    <div id="quiz"></div>
-    <button class="button" id="startButton">¡Realiza el intento!</button>
-    <a class="button" id="finishBtn" style="display:none;">Finalizar</a>
-    <div id="result"></div>
-
-    <script type="module">
         const questions = [
             {
                 question: "¿Cuál es la fórmula de la segunda ley de Newton?",
@@ -167,8 +153,8 @@
         async function finishQuiz(timeOut = false) {
             clearInterval(timerInterval);
             document.getElementById('finishBtn').style.display = 'none';
-            let score = 0;
 
+            let score = 0;
             selectedQuestions.forEach((q, index) => {
                 if (userAnswers[index] === q.answer) {
                     score += 2;
@@ -181,22 +167,37 @@
             const seconds = elapsedTime % 60;
             const timeSpent = `${minutes}m ${seconds}s`;
 
-            const resultText = `Puntaje: ${score}/10<br>Tiempo usado: ${minutes}m ${seconds}s` +
+            const resultText = `Puntaje: ${score}/10<br>Tiempo usado: ${timeSpent}` +
                 (timeOut ? "<br><span style='color:red;'>Tiempo agotado</span>" : "");
 
             document.getElementById('result').innerHTML = resultText;
 
             try {
                 const usuario = getUsuario();
-                await window.addDoc(window.collection(window.firestore, "test2_results"), {
-                    username: usuario,
-                    score: score,
-                    time: timeSpent,
-                    timestamp: endTime
-                });
+                const usuarioRef = doc(window.firestore, "usuarios", usuario);
+
+                const docSnap = await getDoc(usuarioRef);
+                if (docSnap.exists()) {
+                    await updateDoc(usuarioRef, {
+                        "tests.test2": {
+                            score: score,
+                            time: timeSpent,
+                            timestamp: endTime
+                        }
+                    });
+                } else {
+                    await setDoc(usuarioRef, {
+                        tests: {
+                            test2: {
+                                score: score,
+                                time: timeSpent,
+                                timestamp: endTime
+                            }
+                        }
+                    });
+                }
+
                 alert('Resultados guardados correctamente. Puntaje: ' + score + ' Tiempo: ' + timeSpent);
-
-
             } catch (error) {
                 console.error("Error al guardar en Firestore:", error);
                 alert('Error al guardar los resultados. Por favor, inténtelo de nuevo.');
@@ -211,6 +212,7 @@
             secondsLeft = 120;
             document.getElementById('startButton').style.display = 'none';
             document.getElementById('finishBtn').style.display = 'inline-block';
+            document.getElementById('result').innerHTML = '';
             const quizContainer = document.getElementById('quiz');
             quizContainer.innerHTML = '';
             selectedQuestions = questions.sort(() => 0.5 - Math.random()).slice(0, 5);
@@ -246,7 +248,9 @@
         window.onload = () => {
             getUsuario();
             document.getElementById('startButton').addEventListener('click', startQuiz);
+            document.getElementById('finishBtn').addEventListener('click', () => finishQuiz(false));
         }
     </script>
 </body>
 </html>
+``
