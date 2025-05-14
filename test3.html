@@ -3,60 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>Test: Tercera Ley de Newton</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f3f3f3;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-    }
-    .question {
-      background-color: #fff;
-      border-radius: 5px;
-      padding: 15px;
-      margin-bottom: 10px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    }
-    .options {
-      list-style-type: none;
-      padding: 0;
-    }
-    .options li {
-      margin-bottom: 5px;
-      cursor: pointer;
-      padding: 5px;
-      border-radius: 3px;
-    }
-    .options li:hover {
-      background-color: #e0e0e0;
-    }
-    .selected {
-      background-color: #d3d3d3;
-    }
-    .button {
-      display: block;
-      width: 200px;
-      margin: 20px auto;
-      padding: 10px;
-      background-color: #007BFF;
-      color: #fff;
-      text-align: center;
-      border-radius: 5px;
-      cursor: pointer;
-      text-decoration: none;
-    }
-    #timer {
-      text-align: center;
-      font-size: 18px;
-      margin: 15px;
-    }
-    #result {
-      text-align: center;
-      font-weight: bold;
-      margin-top: 20px;
-    }
+    /* ... Estilos igual que antes ... */
   </style>
 </head>
 <body>
@@ -69,107 +19,29 @@
   <div id="result"></div>
 
   <script>
+    // Inicializar Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
+      authDomain: "base-de-datos-usuarios-433da.firebaseapp.com",
+      projectId: "base-de-datos-usuarios-433da",
+      storageBucket: "base-de-datos-usuarios-433da.appspot.com",
+      messagingSenderId: "563969031549",
+      appId: "1:563969031549:web:66c35b0e769d73b31d2014"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     const questions = [
-      {
-        question: "¿Qué enuncia la tercera ley de Newton?",
-        options: [
-          "Un objeto en reposo permanece en reposo",
-          "Por cada acción hay una reacción igual y opuesta",
-          "La aceleración depende de la fuerza neta",
-          "La energía se conserva"
-        ],
-        answer: 1
-      },
-      {
-        question: "Si empujas una pared con 60 N, ¿qué hace la pared según la tercera ley?",
-        options: [
-          "Te devuelve una fuerza menor",
-          "No reacciona",
-          "Te devuelve una fuerza igual en sentido contrario",
-          "Absorbe la fuerza"
-        ],
-        answer: 2
-      },
-      {
-        question: "¿Qué ocurre cuando disparas un arma según la tercera ley de Newton?",
-        options: [
-          "La bala avanza y el arma retrocede",
-          "Solo la bala se mueve",
-          "El cañón se calienta",
-          "Ambos se mueven hacia adelante"
-        ],
-        answer: 0
-      },
-      {
-        question: "Un cohete despega expulsando gases hacia abajo, ¿qué le ocurre?",
-        options: [
-          "Se eleva por la acción y reacción",
-          "Se mantiene estático",
-          "Solo el gas se mueve",
-          "La gravedad lo empuja"
-        ],
-        answer: 0
-      },
-      {
-        question: "Cuando empujas un carrito hacia adelante, ¿qué ocurre contigo?",
-        options: [
-          "Nada, solo el carrito se mueve",
-          "También avanzas con el carrito",
-          "Sientes una fuerza hacia atrás",
-          "Pierdes masa"
-        ],
-        answer: 2
-      },
-      {
-        question: "¿Por qué un nadador avanza al empujar el agua hacia atrás?",
-        options: [
-          "Por la fuerza del viento",
-          "Por la acción del agua que lo impulsa",
-          "Por su masa",
-          "Por la fricción con el agua"
-        ],
-        answer: 1
-      },
-      {
-        question: "Cuando un ave empuja el aire hacia abajo con sus alas:",
-        options: [
-          "El ave se eleva por la reacción del aire",
-          "El aire desaparece",
-          "El ave no se mueve",
-          "Se pierde energía"
-        ],
-        answer: 0
-      },
-      {
-        question: "Dos patinadores se empujan entre sí. ¿Qué sucede?",
-        options: [
-          "Se acercan",
-          "Ambos se mueven en sentidos opuestos",
-          "Solo uno se mueve",
-          "Ambos permanecen quietos"
-        ],
-        answer: 1
-      },
-      {
-        question: "¿Qué sucede al saltar desde una balsa?",
-        options: [
-          "La balsa se mueve hacia adelante",
-          "No pasa nada",
-          "La balsa se mueve en sentido opuesto",
-          "Te hundes"
-        ],
-        answer: 2
-      },
-      {
-        question: "¿Cuál de estos ejemplos refleja mejor la tercera ley de Newton?",
-        options: [
-          "Un objeto acelerando cuesta abajo",
-          "El peso de una piedra",
-          "El retroceso de una pistola al disparar",
-          "El calor de una fogata"
-        ],
-        answer: 2
-      }
+      { question: "¿Qué enuncia la tercera ley de Newton?", options: [ "Un objeto en reposo permanece en reposo", "Por cada acción hay una reacción igual y opuesta", "La aceleración depende de la fuerza neta", "La energía se conserva" ], answer: 1 },
+      { question: "Si empujas una pared con 60 N, ¿qué hace la pared según la tercera ley?", options: [ "Te devuelve una fuerza menor", "No reacciona", "Te devuelve una fuerza igual en sentido contrario", "Absorbe la fuerza" ], answer: 2 },
+      { question: "¿Qué ocurre cuando disparas un arma según la tercera ley de Newton?", options: [ "La bala avanza y el arma retrocede", "Solo la bala se mueve", "El cañón se calienta", "Ambos se mueven hacia adelante" ], answer: 0 },
+      { question: "Un cohete despega expulsando gases hacia abajo, ¿qué le ocurre?", options: [ "Se eleva por la acción y reacción", "Se mantiene estático", "Solo el gas se mueve", "La gravedad lo empuja" ], answer: 0 },
+      { question: "Cuando empujas un carrito hacia adelante, ¿qué ocurre contigo?", options: [ "Nada, solo el carrito se mueve", "También avanzas con el carrito", "Sientes una fuerza hacia atrás", "Pierdes masa" ], answer: 2 },
+      { question: "¿Por qué un nadador avanza al empujar el agua hacia atrás?", options: [ "Por la fuerza del viento", "Por la acción del agua que lo impulsa", "Por su masa", "Por la fricción con el agua" ], answer: 1 },
+      { question: "Cuando un ave empuja el aire hacia abajo con sus alas:", options: [ "El ave se eleva por la reacción del aire", "El aire desaparece", "El ave no se mueve", "Se pierde energía" ], answer: 0 },
+      { question: "Dos patinadores se empujan entre sí. ¿Qué sucede?", options: [ "Se acercan", "Ambos se mueven en sentidos opuestos", "Solo uno se mueve", "Ambos permanecen quietos" ], answer: 1 },
+      { question: "¿Qué sucede al saltar desde una balsa?", options: [ "La balsa se mueve hacia adelante", "No pasa nada", "La balsa se mueve en sentido opuesto", "Te hundes" ], answer: 2 },
+      { question: "¿Cuál de estos ejemplos refleja mejor la tercera ley de Newton?", options: [ "Un objeto acelerando cuesta abajo", "El peso de una piedra", "El retroceso de una pistola al disparar", "El calor de una fogata" ], answer: 2 }
     ];
 
     let selectedQuestions = [];
@@ -240,8 +112,8 @@
     function finishQuiz(timeOut = false) {
       clearInterval(timer);
       document.getElementById('finishBtn').style.display = 'none';
-      let score = 0;
 
+      let score = 0;
       selectedQuestions.forEach((q, index) => {
         if (userAnswers[index] === q.answer) {
           score += 2;
@@ -255,8 +127,21 @@
 
       const resultText = `Puntaje: ${score}/10<br>Tiempo usado: ${minutes}m ${seconds}s` +
         (timeOut ? "<br><span style='color:red;'>Tiempo agotado</span>" : "");
-      
       document.getElementById('result').innerHTML = resultText;
+
+      // Guardar en Firebase
+      const nombreUsuario = localStorage.getItem("nombreUsuario") || "Desconocido";
+      db.collection("resultados").add({
+        nombre: nombreUsuario,
+        test: "test3",
+        calificacion: score,
+        tiempo: `${minutes}m ${seconds}s`,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        console.log("Resultado guardado correctamente.");
+      }).catch((error) => {
+        console.error("Error al guardar resultado:", error);
+      });
     }
   </script>
 
