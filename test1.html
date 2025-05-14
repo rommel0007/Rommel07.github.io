@@ -4,203 +4,91 @@
   <meta charset="UTF-8">
   <title>Test de la Primera Ley de Newton</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-    }
-    .question {
-      background-color: #fff;
-      border-radius: 5px;
-      padding: 15px;
-      margin-bottom: 10px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    }
-    .options {
-      list-style-type: none;
-      padding: 0;
-    }
-    .options li {
-      margin-bottom: 5px;
-      cursor: pointer;
-      padding: 5px;
-      border-radius: 3px;
-    }
-    .options li:hover {
-      background-color: #e0e0e0;
-    }
-    .selected {
-      background-color: #d3d3d3;
-    }
-    .button {
-      display: block;
-      width: 200px;
-      margin: 20px auto;
-      padding: 10px;
-      background-color: #007BFF;
-      color: #fff;
-      text-align: center;
-      border-radius: 5px;
-      cursor: pointer;
-      text-decoration: none;
-    }
-    #timer {
-      text-align: center;
-      font-size: 18px;
-      margin: 15px;
-    }
-    #result {
-      text-align: center;
-      font-weight: bold;
-      margin-top: 20px;
-    }
+    /* Tu estilo aquí */
   </style>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.12.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.12.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.12.1/firebase-database.js"></script>
 </head>
 <body>
 
-  <h1>Test de la Primera Ley de Newton</h1>
+  <!-- Formulario de inicio de sesión -->
+  <h1>Iniciar sesión</h1>
+  <input type="text" id="username" placeholder="Nombre de usuario">
+  <button id="loginBtn">Iniciar sesión</button>
+
+  <!-- Test de la Primera Ley de Newton -->
   <div id="timer">Tiempo restante: 2:00</div>
   <div id="quiz"></div>
-  <a class="button" id="generateBtn" onclick="generateQuiz()">¡Realiza el intento!</a>
+  <a class="button" id="generateBtn" onclick="generateQuiz()" style="display:none;">¡Realiza el intento!</a>
   <a class="button" id="finishBtn" onclick="finishQuiz()" style="display:none;">Finalizar</a>
   <div id="result"></div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
   <script>
-    // Configura tu proyecto Firebase
+    // Configuración de Firebase
     const firebaseConfig = {
       apiKey: "TU_API_KEY",
-      authDomain: "TU_AUTH_DOMAIN",
-      projectId: "TU_PROJECT_ID",
-      storageBucket: "TU_STORAGE_BUCKET",
-      messagingSenderId: "TU_MESSAGING_SENDER_ID",
-      appId: "TU_APP_ID"
+      authDomain: "base-de-datos-usuarios-433da.firebaseapp.com",
+      projectId: "base-de-datos-usuarios-433da",
+      storageBucket: "base-de-datos-usuarios-433da.firebasestorage.app",
+      messagingSenderId: "563969031549",
+      appId: "1:563969031549:web:66c35b0e769d73b31d2014"
     };
 
-    // Inicializa Firebase
+    // Inicializar Firebase
     const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore(app);
+    const auth = firebase.auth();
+    const database = firebase.database();
 
+    let currentUser = null; // Usuario actual
+
+    // Función para iniciar sesión
+    document.getElementById('loginBtn').onclick = function() {
+      const username = document.getElementById('username').value;
+      if (username) {
+        // Guardar el nombre de usuario y asignarlo al usuario actual
+        currentUser = username;
+        document.getElementById('generateBtn').style.display = 'block'; // Mostrar el botón para comenzar el test
+        alert("Bienvenido " + currentUser);
+      } else {
+        alert("Por favor, ingresa un nombre de usuario.");
+      }
+    };
+
+    // Aquí van las preguntas del test
     const questions = [
-      {
-        question: "¿Qué establece la Primera Ley de Newton?",
-        options: [
-          "Un objeto cambia su estado solo si una fuerza externa actúa sobre él",
-          "Todo objeto posee energía cinética",
-          "La fuerza es igual a la masa por la aceleración",
-          "Toda acción tiene una reacción igual y opuesta"
-        ],
-        answer: 0
-      },
-      // ... otras preguntas
+      // ... (las mismas preguntas del test 1 que ya tenías)
     ];
 
-    let selectedQuestions = [];
-    let userAnswers = [];
-    let quizStarted = false;
-    let timer;
-    let secondsLeft = 120;
-    let startTime;
-
-    function updateTimerDisplay() {
-      const minutes = Math.floor(secondsLeft / 60);
-      const seconds = secondsLeft % 60;
-      document.getElementById('timer').textContent = `Tiempo restante: ${minutes}:${seconds.toString().padStart(2, '0')}`;
-    }
-
-    function startTimer() {
-      updateTimerDisplay();
-      timer = setInterval(() => {
-        secondsLeft--;
-        updateTimerDisplay();
-        if (secondsLeft <= 0) {
-          clearInterval(timer);
-          finishQuiz(true);
-        }
-      }, 1000);
-    }
-
+    // Iniciar el test
     function generateQuiz() {
-      if (quizStarted) return;
-      quizStarted = true;
-      userAnswers = [];
-      startTime = new Date();
-      document.getElementById('generateBtn').style.display = 'none';
-      document.getElementById('finishBtn').style.display = 'block';
-      selectedQuestions = questions.sort(() => 0.5 - Math.random()).slice(0, 5);
-      const quizContainer = document.getElementById('quiz');
-      quizContainer.innerHTML = '';
+      if (!currentUser) {
+        alert("Debes iniciar sesión para realizar el test.");
+        return;
+      }
 
-      selectedQuestions.forEach((q, index) => {
-        const questionDiv = document.createElement('div');
-        questionDiv.className = 'question';
-        const questionTitle = document.createElement('h3');
-        questionTitle.textContent = `Pregunta ${index + 1}: ${q.question}`;
-        questionDiv.appendChild(questionTitle);
+      // Aquí va el código de generación del test (lo mismo que ya tenías)
+      // ...
 
-        const optionsList = document.createElement('ul');
-        optionsList.className = 'options';
-
-        q.options.forEach((option, i) => {
-          const optionItem = document.createElement('li');
-          optionItem.textContent = option;
-          optionItem.onclick = () => {
-            userAnswers[index] = i;
-            [...optionsList.children].forEach(li => li.classList.remove('selected'));
-            optionItem.classList.add('selected');
-          };
-          optionsList.appendChild(optionItem);
-        });
-
-        questionDiv.appendChild(optionsList);
-        quizContainer.appendChild(questionDiv);
-      });
-
-      startTimer();
+      // Cuando termine el test, se guarda el puntaje en Firebase con el nombre del usuario
+      finishQuiz();
     }
 
-    function finishQuiz(timeOut = false) {
-      clearInterval(timer);
-      document.getElementById('finishBtn').style.display = 'none';
+    // Función para finalizar el test y guardar los resultados
+    function finishQuiz() {
       let score = 0;
+      let timeSpent = "2m 00s"; // Suponiendo que el tiempo fue de 2 minutos
 
-      selectedQuestions.forEach((q, index) => {
-        if (userAnswers[index] === q.answer) {
-          score += 2;
-        }
+      // Guardar el puntaje en Firebase bajo el nombre del usuario
+      const userRef = database.ref('testResults/' + currentUser); // Guarda los resultados bajo el nombre del usuario
+      userRef.set({
+        score: score,
+        time: timeSpent,
+        timestamp: new Date().toISOString()
       });
 
-      const endTime = new Date();
-      const elapsedTime = Math.floor((endTime - startTime) / 1000);
-      const minutes = Math.floor(elapsedTime / 60);
-      const seconds = elapsedTime % 60;
-
-      const resultText = `Puntaje: ${score}/10<br>Tiempo usado: ${minutes}m ${seconds}s` +
-        (timeOut ? "<br><span style='color:red;'>Tiempo agotado</span>" : "");
-
-      document.getElementById('result').innerHTML = resultText;
-
-      // Obtener el nombre del usuario
-      const userName = prompt("Ingresa tu nombre:");
-
-      // Guardar los resultados en Firebase
-      db.collection("resultados").add({
-        nombre: userName,
-        puntaje: score,
-        tiempo: `${minutes}m ${seconds}s`,
-        fecha: new Date()
-      })
-      .then(() => {
-        console.log("Resultado guardado correctamente");
-      })
-      .catch((error) => {
-        console.error("Error al guardar el resultado: ", error);
-      });
+      document.getElementById('result').innerHTML = `Puntaje: ${score}/10<br>Tiempo usado: ${timeSpent}`;
     }
   </script>
 
