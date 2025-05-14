@@ -43,9 +43,15 @@
             border: none;
             font-size: 16px;
         }
+        .options li.disabled {
+            pointer-events: none;
+            opacity: 0.6;
+            cursor: default;
+        }
         #result {
             font-weight: bold;
             margin-top: 20px;
+            white-space: pre-line;
         }
         #timer {
             font-size: 18px;
@@ -71,7 +77,6 @@
         window.addDoc = addDoc;
         window.doc = doc;
         window.setDoc = setDoc;
-
     </script>
 </head>
 <body>
@@ -142,6 +147,7 @@
         let selectedQuestions = [];
         let userAnswers = [];
         let quizStarted = false;
+        let quizFinished = false;
         let timerInterval;
         let secondsLeft = 120;
         let startTime;
@@ -176,14 +182,24 @@
         }
 
         async function finishQuiz(timeOut = false) {
+            if (quizFinished) return; // evitar doble ejecución
+            quizFinished = true;
             clearInterval(timerInterval);
             document.getElementById('finishBtn').style.display = 'none';
-            let score = 0;
 
+            // Validar que todas las preguntas estén respondidas, salvo si es por timeout
+            if (!timeOut && userAnswers.length < selectedQuestions.length) {
+                alert("Por favor, responde todas las preguntas antes de finalizar.");
+                quizFinished = false;
+                document.getElementById('finishBtn').style.display = 'inline-block';
+                startTimer();
+                return;
+            }
+
+            // Puntaje: 2 puntos por respuesta correcta
+            let score = 0;
             selectedQuestions.forEach((q, index) => {
-                if (userAnswers[index] === q.answer) {
-                    score += 2;
-                }
+                if (userAnswers[index] === q.answer) score += 2;
             });
 
             const endTime = new Date();
@@ -192,10 +208,16 @@
             const seconds = elapsedTime % 60;
             const timeSpent = `${minutes}m ${seconds}s`;
 
-            const resultText = `Puntaje: ${score}/10\nTiempo usado: ${minutes}m ${seconds}s` +
+            const resultText = `Puntaje: ${score}/10\nTiempo usado: ${timeSpent}` +
                 (timeOut ? "\nTiempo agotado" : "");
 
             document.getElementById('result').innerText = resultText;
+
+            // Bloquear opciones para que no puedan cambiar respuestas tras finalizar
+            document.querySelectorAll('.options li').forEach(li => {
+                li.classList.add('disabled');
+                li.onclick = null;
+            });
 
             try {
                 const usuario = getUsuario();
@@ -208,7 +230,7 @@
                     }
                 }, { merge: true });
 
-                alert('Resultados guardados correctamente. Puntaje: ' + score + ' Tiempo: ' + timeSpent);
+                alert('Resultados guardados correctamente.\nPuntaje: ' + score + '\nTiempo: ' + timeSpent);
 
             } catch (error) {
                 console.error("Error al guardar en Firestore:", error);
@@ -219,11 +241,13 @@
         function startQuiz() {
             if (quizStarted) return;
             quizStarted = true;
+            quizFinished = false;
             userAnswers = [];
             startTime = new Date();
             secondsLeft = 120;
             document.getElementById('startButton').style.display = 'none';
             document.getElementById('finishBtn').style.display = 'inline-block';
+            document.getElementById('result').innerText = '';
             const quizContainer = document.getElementById('quiz');
             quizContainer.innerHTML = '';
             selectedQuestions = questions.sort(() => 0.5 - Math.random()).slice(0, 5);
@@ -242,6 +266,7 @@
                     const optionItem = document.createElement('li');
                     optionItem.textContent = option;
                     optionItem.onclick = () => {
+                        if (quizFinished) return; // bloqueo si ya terminó
                         userAnswers[index] = i;
                         [...optionsList.children].forEach(li => li.classList.remove('selected'));
                         optionItem.classList.add('selected');
@@ -264,4 +289,5 @@
     </script>
 </body>
 </html>
+
 
