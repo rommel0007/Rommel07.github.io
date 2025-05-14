@@ -4,17 +4,16 @@
   <meta charset="UTF-8">
   <title>Test de la Segunda Ley de Newton</title>
   <script type="module">
-    // Firebase config (usa tus datos reales aquí)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
     import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 
     const firebaseConfig = {
-     apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
-  authDomain: "base-de-datos-usuarios-433da.firebaseapp.com",
-  projectId: "base-de-datos-usuarios-433da",
-  storageBucket: "base-de-datos-usuarios-433da.firebasestorage.app",
-  messagingSenderId: "563969031549",
-  appId: "1:563969031549:web:66c35b0e769d73b31d2014"
+      apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
+      authDomain: "base-de-datos-usuarios-433da.firebaseapp.com",
+      projectId: "base-de-datos-usuarios-433da",
+      storageBucket: "base-de-datos-usuarios-433da.appspot.com",
+      messagingSenderId: "563969031549",
+      appId: "1:563969031549:web:66c35b0e769d73b31d2014"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -35,12 +34,45 @@
     };
   </script>
   <style>
-    /* ... Tus estilos originales aquí sin cambios ... */
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .question {
+      margin-bottom: 20px;
+    }
+    .options {
+      list-style: none;
+      padding: 0;
+    }
+    .options li {
+      padding: 5px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+      cursor: pointer;
+    }
+    .options li.selected {
+      background-color: #cce5ff;
+    }
+    .button {
+      display: inline-block;
+      margin: 10px 5px;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #result {
+      font-weight: bold;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
 
-  <h1>Test de la segunda ley de Newton</h1>
+  <h1>Test de la Segunda Ley de Newton</h1>
   <div id="timer">Tiempo restante: 2:00</div>
   <div id="quiz"></div>
   <a class="button" id="generateBtn" onclick="generateQuiz()">¡Realiza el intento!</a>
@@ -48,7 +80,58 @@
   <div id="result"></div>
 
   <script>
-    const questions = [/* ... Tus preguntas como ya estaban ... */];
+    const questions = [
+      {
+        question: "¿Cuál es la fórmula de la segunda ley de Newton?",
+        options: ["F = m·a", "E = m·c²", "V = I·R", "P = m·g"],
+        answer: 0
+      },
+      {
+        question: "Si duplicas la masa, ¿qué pasa con la fuerza necesaria para mantener la misma aceleración?",
+        options: ["Se mantiene igual", "Se duplica", "Se reduce a la mitad", "No cambia"],
+        answer: 1
+      },
+      {
+        question: "¿Qué unidad se usa para medir la fuerza en el SI?",
+        options: ["Joule", "Newton", "Pascal", "Watt"],
+        answer: 1
+      },
+      {
+        question: "Un objeto de 4 kg acelera a 3 m/s². ¿Cuál es la fuerza aplicada?",
+        options: ["7 N", "1.33 N", "12 N", "0.75 N"],
+        answer: 2
+      },
+      {
+        question: "¿Qué relación existe entre fuerza neta y aceleración?",
+        options: ["Son inversamente proporcionales", "No están relacionadas", "La fuerza neta causa aceleración", "La aceleración causa masa"],
+        answer: 2
+      },
+      {
+        question: "¿Cuál de estas opciones representa una fuerza de 10 N aplicada a un objeto de 2 kg?",
+        options: ["10 m/s²", "5 m/s²", "20 m/s²", "2 m/s²"],
+        answer: 1
+      },
+      {
+        question: "Si un objeto no tiene fuerza neta, su aceleración es...",
+        options: ["Máxima", "Mínima", "Cero", "Infinita"],
+        answer: 2
+      },
+      {
+        question: "¿Cómo afecta la fuerza neta a un objeto en reposo?",
+        options: ["Lo mantiene en reposo", "Lo acelera", "Lo detiene", "Disminuye su masa"],
+        answer: 1
+      },
+      {
+        question: "¿Qué indica una aceleración negativa?",
+        options: ["Aumento de velocidad", "Disminución de masa", "Disminución de velocidad", "Aceleración constante"],
+        answer: 2
+      },
+      {
+        question: "¿Qué pasa si se aplica una fuerza constante a un objeto sin fricción?",
+        options: ["Acelera continuamente", "Se detiene", "Se mueve a velocidad constante", "Pierde masa"],
+        answer: 0
+      }
+    ];
 
     let selectedQuestions = [];
     let userAnswers = [];
@@ -80,9 +163,8 @@
       quizStarted = true;
       userAnswers = [];
       startTime = new Date();
-
       document.getElementById('generateBtn').style.display = 'none';
-      document.getElementById('finishBtn').style.display = 'block';
+      document.getElementById('finishBtn').style.display = 'inline-block';
       selectedQuestions = questions.sort(() => 0.5 - Math.random()).slice(0, 5);
       const quizContainer = document.getElementById('quiz');
       quizContainer.innerHTML = '';
@@ -136,7 +218,6 @@
 
       document.getElementById('result').innerHTML = resultText;
 
-      // Obtener el nombre del usuario desde localStorage y guardar en Firebase
       const username = localStorage.getItem("username") || "Invitado";
       if (window.saveTest2Result) {
         window.saveTest2Result(username, score, elapsedTime);
@@ -148,4 +229,3 @@
 
 </body>
 </html>
-
