@@ -1,227 +1,262 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Test: Tercera Ley de Newton</title>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background-color: #f9f9f9;
-    }
-    h1 {
-      color: #333;
-      text-align: center;
-    }
-    #timer {
-      font-size: 20px;
-      font-weight: bold;
-      text-align: center;
-      margin: 10px 0;
-    }
-    .button {
-      display: inline-block;
-      padding: 10px 20px;
-      margin: 10px;
-      background-color: #4CAF50;
-      color: white;
-      text-decoration: none;
-      cursor: pointer;
-      border-radius: 5px;
-      user-select: none;
-    }
-    .button[disabled] {
-      background-color: #a5d6a7;
-      cursor: not-allowed;
-    }
-    .question {
-      background-color: #fff;
-      padding: 15px;
-      margin-bottom: 10px;
-      border-radius: 5px;
-      border: 1px solid #ddd;
-    }
-    .question h3 {
-      margin-top: 0;
-    }
-    .options li {
-      list-style: none;
-      margin: 5px 0;
-      padding: 8px;
-      background-color: #eee;
-      border-radius: 3px;
-      cursor: pointer;
-      user-select: none;
-      transition: background-color 0.2s;
-    }
-    .options li:hover {
-      background-color: #d6eaff;
-    }
-    .options li.selected {
-      background-color: #cce5ff;
-      font-weight: bold;
-    }
-    #result {
-      text-align: center;
-      font-size: 18px;
-      margin-top: 20px;
-      white-space: pre-wrap;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <title>Test de la Tercera Ley de Newton</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .options {
+            list-style: none;
+            padding: 0;
+        }
+        .options li {
+            padding: 5px;
+            border: 1px solid #ccc;
+            margin-top: 5px;
+            cursor: pointer;
+        }
+        .options li.selected {
+            background-color: #cce5ff;
+        }
+        .button {
+            display: inline-block;
+            margin: 10px 5px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+            font-size: 16px;
+        }
+        #result {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        #timer {
+            font-size: 18px;
+        }
+    </style>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
+            authDomain: "base-de-datos-usuarios-433da.firebaseapp.com",
+            projectId: "base-de-datos-usuarios-433da",
+            storageBucket: "base-de-datos-usuarios-433da.appspot.com",
+            messagingSenderId: "563969031549",
+            appId: "1:563969031549:web:66c35b0e769d73b31d2014"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        window.firestore = db;
+        window.collection = collection;
+        window.addDoc = addDoc;
+
+    </script>
 </head>
 <body>
+    <header>
+        <h1>Test de la Tercera Ley de Newton</h1>
+        <div id="timer">Tiempo restante: 2:00</div>
+        <button class="button" id="startButton">¡Realiza el intento!</button>
+    </header>
 
-  <h1>Test: Tercera Ley de Newton</h1>
-  <div id="timer">Tiempo restante: 2:00</div>
-  <div id="quiz"></div>
-  <a class="button" id="generateBtn" onclick="generateQuiz()">¡Iniciar test!</a>
-  <a class="button" id="finishBtn" onclick="finishQuiz()" style="display:none;">Finalizar</a>
-  <div id="result"></div>
+    <div id="quiz"></div>
+    <button class="button" id="finishBtn" style="display:none;">Finalizar</button>
+    <div id="result"></div>
 
-  <script>
-    // Inicializar Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
-      authDomain: "base-de-datos-usuarios-433da.firebaseapp.com",
-      projectId: "base-de-datos-usuarios-433da",
-      storageBucket: "base-de-datos-usuarios-433da.appspot.com",
-      messagingSenderId: "563969031549",
-      appId: "1:563969031549:web:66c35b0e769d73b31d2014"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    <script type="module">
+        const questions = [
+            {
+                question: "¿Qué establece la tercera ley de Newton?",
+                options: [
+                    "A toda acción corresponde una reacción igual y contraria",
+                    "La fuerza es igual a la masa por la aceleración",
+                    "La energía se conserva",
+                    "La masa y la energía son equivalentes"
+                ],
+                answer: 0
+            },
+            {
+                question: "Si empujas una pared, ¿qué fuerza experimentas según la tercera ley?",
+                options: [
+                    "Ninguna fuerza",
+                    "Una fuerza igual y opuesta de la pared",
+                    "Una fuerza menor que la aplicada",
+                    "Una fuerza mayor que la aplicada"
+                ],
+                answer: 1
+            },
+            {
+                question: "La tercera ley de Newton explica:",
+                options: [
+                    "Por qué los objetos en reposo permanecen en reposo",
+                    "Por qué los objetos aceleran cuando se les aplica fuerza",
+                    "Por qué los cohetes pueden impulsarse en el espacio",
+                    "Por qué la energía se transfiere"
+                ],
+                answer: 2
+            },
+            {
+                question: "Cuando un cohete expulsa gases hacia atrás, ¿qué sucede según la tercera ley?",
+                options: [
+                    "El cohete se detiene",
+                    "Los gases vuelven al cohete",
+                    "El cohete avanza hacia adelante",
+                    "No hay reacción"
+                ],
+                answer: 2
+            },
+            {
+                question: "¿Qué sucede con las fuerzas en una interacción entre dos cuerpos?",
+                options: [
+                    "Son fuerzas independientes",
+                    "Son fuerzas iguales en magnitud y dirección",
+                    "Son fuerzas iguales en magnitud y opuestas en dirección",
+                    "Una fuerza domina a la otra"
+                ],
+                answer: 2
+            }
+        ];
 
-    const questions = [
-      { question: "¿Qué enuncia la tercera ley de Newton?", options: [ "Un objeto en reposo permanece en reposo", "Por cada acción hay una reacción igual y opuesta", "La aceleración depende de la fuerza neta", "La energía se conserva" ], answer: 1 },
-      { question: "Si empujas una pared con 60 N, ¿qué hace la pared según la tercera ley?", options: [ "Te devuelve una fuerza menor", "No reacciona", "Te devuelve una fuerza igual en sentido contrario", "Absorbe la fuerza" ], answer: 2 },
-      { question: "¿Qué ocurre cuando disparas un arma según la tercera ley de Newton?", options: [ "La bala avanza y el arma retrocede", "Solo la bala se mueve", "El cañón se calienta", "Ambos se mueven hacia adelante" ], answer: 0 },
-      { question: "Un cohete despega expulsando gases hacia abajo, ¿qué le ocurre?", options: [ "Se eleva por la acción y reacción", "Se mantiene estático", "Solo el gas se mueve", "La gravedad lo empuja" ], answer: 0 },
-      { question: "Cuando empujas un carrito hacia adelante, ¿qué ocurre contigo?", options: [ "Nada, solo el carrito se mueve", "También avanzas con el carrito", "Sientes una fuerza hacia atrás", "Pierdes masa" ], answer: 2 },
-      { question: "¿Por qué un nadador avanza al empujar el agua hacia atrás?", options: [ "Por la fuerza del viento", "Por la acción del agua que lo impulsa", "Por su masa", "Por la fricción con el agua" ], answer: 1 },
-      { question: "Cuando un ave empuja el aire hacia abajo con sus alas:", options: [ "El ave se eleva por la reacción del aire", "El aire desaparece", "El ave no se mueve", "Se pierde energía" ], answer: 0 },
-      { question: "Dos patinadores se empujan entre sí. ¿Qué sucede?", options: [ "Se acercan", "Ambos se mueven en sentidos opuestos", "Solo uno se mueve", "Ambos permanecen quietos" ], answer: 1 },
-      { question: "¿Qué sucede al saltar desde una balsa?", options: [ "La balsa se mueve hacia adelante", "No pasa nada", "La balsa se mueve en sentido opuesto", "Te hundes" ], answer: 2 },
-      { question: "¿Cuál de estos ejemplos refleja mejor la tercera ley de Newton?", options: [ "Un objeto acelerando cuesta abajo", "El peso de una piedra", "El retroceso de una pistola al disparar", "El calor de una fogata" ], answer: 2 }
-    ];
+        let selectedQuestions = [];
+        let userAnswers = [];
+        let quizStarted = false;
+        let timerInterval;
+        let secondsLeft = 120;
+        let startTime;
+        let currentUser;
 
-    let selectedQuestions = [];
-    let userAnswers = [];
-    let quizStarted = false;
-    let timer;
-    let secondsLeft = 120;
-    let startTime;
-
-    function updateTimerDisplay() {
-      const minutes = Math.floor(secondsLeft / 60);
-      const seconds = secondsLeft % 60;
-      document.getElementById('timer').textContent = `Tiempo restante: ${minutes}:${seconds.toString().padStart(2, '0')}`;
-    }
-
-    function startTimer() {
-      updateTimerDisplay();
-      timer = setInterval(() => {
-        secondsLeft--;
-        updateTimerDisplay();
-        if (secondsLeft <= 0) {
-          clearInterval(timer);
-          finishQuiz(true);
+        function getUsuario() {
+            currentUser = localStorage.getItem('usuario');
+            if (!currentUser) {
+                alert('Por favor, inicie sesión para realizar el test.');
+                window.location.href = 'index.html';
+            }
+            return currentUser;
         }
-      }, 1000);
-    }
 
-    function generateQuiz() {
-      if (quizStarted) return;
-      quizStarted = true;
-      userAnswers = [];
-      secondsLeft = 120;
-      startTime = new Date();
-
-      document.getElementById('generateBtn').style.display = 'none';
-      document.getElementById('finishBtn').style.display = 'inline-block';
-      selectedQuestions = questions.sort(() => 0.5 - Math.random()).slice(0, 5);
-      const quizContainer = document.getElementById('quiz');
-      quizContainer.innerHTML = '';
-
-      selectedQuestions.forEach((q, index) => {
-        const questionDiv = document.createElement('div');
-        questionDiv.className = 'question';
-        const questionTitle = document.createElement('h3');
-        questionTitle.textContent = `Pregunta ${index + 1}: ${q.question}`;
-        questionDiv.appendChild(questionTitle);
-
-        const optionsList = document.createElement('ul');
-        optionsList.className = 'options';
-
-        q.options.forEach((option, i) => {
-          const optionItem = document.createElement('li');
-          optionItem.textContent = option;
-          optionItem.onclick = () => {
-            userAnswers[index] = i;
-            [...optionsList.children].forEach(li => li.classList.remove('selected'));
-            optionItem.classList.add('selected');
-          };
-          optionsList.appendChild(optionItem);
-        });
-
-        questionDiv.appendChild(optionsList);
-        quizContainer.appendChild(questionDiv);
-      });
-
-      startTimer();
-      document.getElementById('result').innerHTML = "";
-    }
-
-    function finishQuiz(timeOut = false) {
-      if (!quizStarted) return; // No hacer nada si no empezó
-
-      clearInterval(timer);
-      quizStarted = false;
-      document.getElementById('finishBtn').style.display = 'none';
-      document.getElementById('generateBtn').style.display = 'inline-block';
-
-      // Validar que todas las preguntas tengan respuesta (opcional)
-      if (userAnswers.length < selectedQuestions.length || userAnswers.some(ans => ans === undefined)) {
-        alert("Por favor responde todas las preguntas antes de finalizar.");
-        return;
-      }
-
-      let score = 0;
-      selectedQuestions.forEach((q, index) => {
-        if (userAnswers[index] === q.answer) {
-          score += 2;
+        function updateTimerDisplay() {
+            const minutes = Math.floor(secondsLeft / 60);
+            const seconds = secondsLeft % 60;
+            document.getElementById('timer').textContent = `Tiempo restante: ${minutes}:${seconds.toString().padStart(2, '0')}`;
         }
-      });
 
-      const endTime = new Date();
-      const elapsedTime = Math.floor((endTime - startTime) / 1000);
-      const minutes = Math.floor(elapsedTime / 60);
-      const seconds = elapsedTime % 60;
+        function startTimer() {
+            secondsLeft = 120;
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                secondsLeft--;
+                updateTimerDisplay();
+                if (secondsLeft <= 0) {
+                    clearInterval(timerInterval);
+                    finishQuiz(true);
+                }
+            }, 1000);
+        }
 
-      const resultText = `Puntaje: ${score}/10\nTiempo usado: ${minutes}m ${seconds}s` +
-        (timeOut ? "\n\n⚠️ Tiempo agotado" : "");
-      document.getElementById('result').textContent = resultText;
+        async function finishQuiz(timeOut = false) {
+            clearInterval(timerInterval);
+            document.getElementById('finishBtn').style.display = 'none';
+            let score = 0;
 
-      const nombreUsuario = localStorage.getItem("nombreUsuario") || "Desconocido";
+            selectedQuestions.forEach((q, index) => {
+                if (userAnswers[index] === q.answer) {
+                    score += 2;
+                }
+            });
 
-      // Guardar solo si el usuario está definido y tiene resultados
-      if (nombreUsuario && selectedQuestions.length > 0) {
-        db.collection("resultados").add({
-          nombre: nombreUsuario,
-          test: "test3",
-          calificacion: score,
-          tiempoSegundos: elapsedTime,
-          tiempo: `${minutes}m ${seconds}s`,
-          timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-          console.log("Resultado guardado correctamente.");
-        }).catch((error) => {
-          console.error("Error al guardar resultado:", error);
-        });
-      }
-    }
-  </script>
+            const endTime = new Date();
+            const elapsedTime = Math.floor((endTime - startTime) / 1000);
+            const minutes = Math.floor(elapsedTime / 60);
+            const seconds = elapsedTime % 60;
+            const timeSpent = `${minutes}m ${seconds}s`;
 
+            const resultText = `Puntaje: ${score}/10\nTiempo usado: ${minutes}m ${seconds}s` +
+                (timeOut ? "\nTiempo agotado" : "");
+
+            document.getElementById('result').innerText = resultText;
+
+            try {
+                const usuario = getUsuario();
+                await window.addDoc(window.collection(window.firestore, "test3_results"), {
+                    username: usuario,
+                    score: score,
+                    time: timeSpent,
+                    timestamp: endTime
+                });
+                alert('Resultados guardados correctamente. Puntaje: ' + score + ' Tiempo: ' + timeSpent);
+
+            } catch (error) {
+                console.error("Error al guardar en Firestore:", error);
+                alert('Error al guardar los resultados. Por favor, inténtelo de nuevo.');
+            }
+        }
+
+        function startQuiz() {
+            if (quizStarted) return;
+            quizStarted = true;
+            userAnswers = [];
+            startTime = new Date();
+            secondsLeft = 120;
+            document.getElementById('startButton').style.display = 'none';
+            document.getElementById('finishBtn').style.display = 'inline-block';
+            const quizContainer = document.getElementById('quiz');
+            quizContainer.innerHTML = '';
+            selectedQuestions = questions.sort(() => 0.5 - Math.random()).slice(0, 5);
+
+            selectedQuestions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                const questionTitle = document.createElement('h3');
+                questionTitle.textContent = `Pregunta ${index + 1}: ${q.question}`;
+                questionDiv.appendChild(questionTitle);
+
+                const optionsList = document.createElement('ul');
+                optionsList.className = 'options';
+
+                q.options.forEach((option, i) => {
+                    const optionItem = document.createElement('li');
+                    optionItem.textContent = option;
+                    optionItem.onclick = () => {
+                        userAnswers[index] = i;
+                        [...optionsList.children].forEach(li => li.classList.remove('selected'));
+                        optionItem.classList.add('selected');
+                    };
+                    optionsList.appendChild(optionItem);
+                });
+
+                questionDiv.appendChild(optionsList);
+                quizContainer.appendChild(questionDiv);
+            });
+
+            startTimer();
+        }
+
+        window.onload = () => {
+            getUsuario();
+            document.getElementById('startButton').addEventListener('click', startQuiz);
+            document.getElementById('finishBtn').addEventListener('click', () => finishQuiz(false));
+        };
+    </script>
 </body>
 </html>
+
