@@ -4,14 +4,34 @@
     <meta charset="UTF-8">
     <title>Test de la Primera Ley de Newton</title>
     <style>
-      /* Tu estilo aquí */
+      /* Estilos generales */
       body {
         font-family: Arial, sans-serif;
         margin: 0;
         padding: 20px;
+        display: flex; /* Añadimos flexbox para centrar */
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh; /* Aseguramos que el body ocupe toda la altura de la ventana */
+        background-color: #f4f4f4;
       }
+      .container {
+        width: 100%;
+        max-width: 600px; /* Limitamos el ancho del contenedor principal */
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-align: center; /* Centramos el texto dentro del contenedor */
+      }
+      /* Estilos del test */
       #quiz {
         margin-bottom: 20px;
+        text-align: left; /* Alineamos las preguntas y opciones a la izquierda */
+      }
+      #quiz label {
+        display: block; /* Cada label ocupa una línea completa */
+        margin-bottom: 5px; /* Espacio entre opciones */
       }
       .button {
         padding: 10px 20px;
@@ -21,6 +41,7 @@
         cursor: pointer;
         display: inline-block;
         margin-right: 10px;
+        border-radius: 5px;
       }
       .button:hover {
         background-color: #45a049;
@@ -28,11 +49,12 @@
       #result {
         font-weight: bold;
         font-size: 18px;
+        margin-top: 20px;
       }
     </style>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getFirestore, doc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
@@ -49,17 +71,15 @@
         window.firestore = db;
         window.doc = doc;
         window.updateDoc = updateDoc;
-        window.arrayUnion = arrayUnion;
     </script>
 </head>
 <body>
-
-    <div id="timer">Tiempo restante: 2:00</div>
-    <div id="quiz"></div>
-    <a class="button" id="generateBtn" onclick="generateQuiz()">¡Realiza el intento!</a>
-    <a class="button" id="finishBtn" onclick="finishQuiz()" style="display:none;">Finalizar</a>
-    <div id="result"></div>
-
+    <div class="container">  <div id="timer">Tiempo restante: 2:00</div>
+        <div id="quiz"></div>
+        <a class="button" id="generateBtn" onclick="generateQuiz()">¡Realiza el intento!</a>
+        <a class="button" id="finishBtn" onclick="finishQuiz()" style="display:none;">Finalizar</a>
+        <div id="result"></div>
+    </div>
     <script type="module">
         //  Obtener el nombre de usuario de localStorage
         const currentUser = localStorage.getItem('usuario');
@@ -70,6 +90,7 @@
         }
 
         let intervalId; // Para almacenar el ID del intervalo del temporizador
+        let startTime;
 
         // Preguntas del test
         const questions = [
@@ -113,6 +134,7 @@
 
             document.getElementById('finishBtn').style.display = 'inline-block';
             startTimer(); // Iniciar el temporizador cuando se genera el quiz
+            startTime = new Date();
         }
 
         function startTimer() {
@@ -151,10 +173,13 @@
                 }
             });
 
-            //const timeSpent = "2m 00s";  Obtener el tiempo real
             const endTime = new Date();
-            const startTime = new Date(endTime.getTime() - 120000); // Suponiendo 2 minutos
-            const timeSpent = "2:00"; //Esto hay que calcularlo.
+            const timeDiff = endTime.getTime() - startTime.getTime();
+            const minutesSpent = Math.floor(timeDiff / 60000);
+            const secondsSpent = Math.floor((timeDiff % 60000) / 1000);
+            const timeSpent = `${minutesSpent}:${secondsSpent < 10 ? '0' : ''}${secondsSpent}`;
+
+
             const testData = {
                 score: score,
                 time: timeSpent,
@@ -173,10 +198,6 @@
             }
         }
     </script>
-</body>
-</html>
-
-
 </body>
 </html>
 
