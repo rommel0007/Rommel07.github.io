@@ -60,7 +60,7 @@
     </style>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getFirestore, doc, updateDoc, } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
@@ -84,7 +84,7 @@
     <h1>Test de la Primera Ley de Newton</h1>
     <div id="timer">Tiempo restante: 2:00</div>
     <div id="quiz"></div>
-    <a class="button" id="generateBtn" onclick="generateQuiz()">¡Realiza el intento!</a>
+    <a class="button" id="startButton" onclick="startQuiz()">Iniciar Test</a>
     <a class="button" id="finishBtn" onclick="finishQuiz()" style="display:none;">Finalizar</a>
     <div id="result"></div>
 
@@ -271,13 +271,13 @@
             }
         }
 
-        function generateQuiz() {
+        function startQuiz() {
             if (quizStarted) return;
             quizStarted = true;
             userAnswers = [];
             startTime = new Date();
             secondsLeft = 120;
-            document.getElementById('generateBtn').style.display = 'none';
+            document.getElementById('startButton').style.display = 'none';
             document.getElementById('finishBtn').style.display = 'block';
             selectedQuestions = questions.sort(() => 0.5 - Math.random()).slice(0, 5);
             const quizContainer = document.getElementById('quiz');
@@ -311,8 +311,10 @@
             startTimer();
         }
 
-        //Verifica que el usuario este logeado
-        getUsuario();
+        //Verifica que el usuario este logeado y empieza el test
+        window.onload = () => {
+            getUsuario();
+        }
     </script>
 </body>
 </html>
