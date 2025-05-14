@@ -1,138 +1,181 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Test de la Primera Ley de Newton</title>
-  <style>
-    /* Tu estilo aquí */
-  </style>
+    <meta charset="UTF-8">
+    <title>Test de la Primera Ley de Newton</title>
+    <style>
+      /* Tu estilo aquí */
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+      }
+      #quiz {
+        margin-bottom: 20px;
+      }
+      .button {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        display: inline-block;
+        margin-right: 10px;
+      }
+      .button:hover {
+        background-color: #45a049;
+      }
+      #result {
+        font-weight: bold;
+        font-size: 18px;
+      }
+    </style>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, doc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-  <!-- Firebase SDKs (modular + Firestore) -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.12.1/firebase-app.js";
-    import { getFirestore, doc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.12.1/firebase-firestore.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
+            authDomain: "base-de-datos-usuarios-433da.firebaseapp.com",
+            projectId: "base-de-datos-usuarios-433da",
+            storageBucket: "base-de-datos-usuarios-433da.appspot.com",
+            messagingSenderId: "563969031549",
+            appId: "1:563969031549:web:66c35b0e769d73b31d2014"
+        };
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
-      authDomain: "base-de-datos-usuarios-433da.firebaseapp.com",
-      projectId: "base-de-datos-usuarios-433da",
-      storageBucket: "base-de-datos-usuarios-433da.appspot.com",
-      messagingSenderId: "563969031549",
-      appId: "1:563969031549:web:66c35b0e769d73b31d2014"
-    };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    window.firestore = db;
-    window.doc = doc;
-    window.updateDoc = updateDoc;
-    window.arrayUnion = arrayUnion;
-  </script>
+        window.firestore = db;
+        window.doc = doc;
+        window.updateDoc = updateDoc;
+        window.arrayUnion = arrayUnion;
+    </script>
 </head>
 <body>
 
-  <!-- Formulario de inicio de sesión -->
-  <h1>Iniciar sesión</h1>
-  <input type="text" id="username" placeholder="Nombre de usuario">
-  <button id="loginBtn">Iniciar sesión</button>
+    <div id="timer">Tiempo restante: 2:00</div>
+    <div id="quiz"></div>
+    <a class="button" id="generateBtn" onclick="generateQuiz()">¡Realiza el intento!</a>
+    <a class="button" id="finishBtn" onclick="finishQuiz()" style="display:none;">Finalizar</a>
+    <div id="result"></div>
 
-  <!-- Test de la Primera Ley de Newton -->
-  <div id="timer">Tiempo restante: 2:00</div>
-  <div id="quiz"></div>
-  <a class="button" id="generateBtn" onclick="generateQuiz()" style="display:none;">¡Realiza el intento!</a>
-  <a class="button" id="finishBtn" onclick="finishQuiz()" style="display:none;">Finalizar</a>
-  <div id="result"></div>
+    <script type="module">
+        //  Obtener el nombre de usuario de localStorage
+        const currentUser = localStorage.getItem('usuario');
 
-  <script type="module">
-    let currentUser = null;
-
-    document.getElementById('loginBtn').onclick = function () {
-      const username = document.getElementById('username').value.trim();
-      if (username) {
-        currentUser = username;
-        document.getElementById('generateBtn').style.display = 'inline-block';
-        alert("Bienvenido, " + currentUser);
-      } else {
-        alert("Por favor, ingresa un nombre de usuario.");
-      }
-    };
-
-    // Preguntas del test
-    const questions = [
-      {
-        question: "¿Qué dice la Primera Ley de Newton?",
-        options: [
-          "Toda fuerza produce una aceleración.",
-          "Un objeto en reposo permanece en reposo y uno en movimiento sigue en movimiento si no hay fuerzas netas.",
-          "La fuerza es igual a la masa por la aceleración.",
-          "A toda acción hay una reacción de igual magnitud y sentido opuesto."
-        ],
-        correct: 1
-      },
-      {
-        question: "¿Cuál de estos ejemplos representa mejor la inercia?",
-        options: [
-          "Un cohete despegando.",
-          "Una bicicleta frenando en seco.",
-          "Un pasajero que se va hacia adelante cuando el auto frena.",
-          "Una pelota que se acelera cuesta abajo."
-        ],
-        correct: 2
-      },
-      // Puedes agregar más preguntas aquí
-    ];
-
-    function generateQuiz() {
-      const quizDiv = document.getElementById('quiz');
-      quizDiv.innerHTML = '';
-      questions.forEach((q, index) => {
-        const questionElem = document.createElement('div');
-        questionElem.innerHTML = `<p>${index + 1}. ${q.question}</p>`;
-        q.options.forEach((opt, i) => {
-          questionElem.innerHTML += `
-            <label>
-              <input type="radio" name="q${index}" value="${i}"> ${opt}
-            </label><br>`;
-        });
-        quizDiv.appendChild(questionElem);
-      });
-
-      document.getElementById('finishBtn').style.display = 'inline-block';
-    }
-
-    async function finishQuiz() {
-      let score = 0;
-
-      questions.forEach((q, index) => {
-        const radios = document.getElementsByName(`q${index}`);
-        for (let i = 0; i < radios.length; i++) {
-          if (radios[i].checked && parseInt(radios[i].value) === q.correct) {
-            score++;
-            break;
-          }
+        if (!currentUser) {
+            alert("Debes iniciar sesión para realizar el test.");
+            window.location.href = "index.html"; // Redirige al inicio de sesión
         }
-      });
 
-      const timeSpent = "2m 00s"; // Puedes implementar cronómetro si deseas
-      const testData = {
-        score: score,
-        time: timeSpent,
-        timestamp: new Date().toISOString()
-      };
+        let intervalId; // Para almacenar el ID del intervalo del temporizador
 
-      try {
-        const userRef = window.doc(window.firestore, "usuarios", currentUser);
-        await window.updateDoc(userRef, {
-          tests: window.arrayUnion(testData)
-        });
+        // Preguntas del test
+        const questions = [
+            {
+                question: "¿Qué dice la Primera Ley de Newton?",
+                options: [
+                    "Toda fuerza produce una aceleración.",
+                    "Un objeto en reposo permanece en reposo y uno en movimiento sigue en movimiento si no hay fuerzas netas.",
+                    "La fuerza es igual a la masa por la aceleración.",
+                    "A toda acción hay una reacción de igual magnitud y sentido opuesto."
+                ],
+                correct: 1
+            },
+            {
+                question: "¿Cuál de estos ejemplos representa mejor la inercia?",
+                options: [
+                    "Un cohete despegando.",
+                    "Una bicicleta frenando en seco.",
+                    "Un pasajero que se va hacia adelante cuando el auto frena.",
+                    "Una pelota que se acelera cuesta abajo."
+                ],
+                correct: 2
+            },
+            // Puedes agregar más preguntas aquí
+        ];
 
-        document.getElementById('result').innerHTML = `Puntaje: ${score}/${questions.length}<br>Tiempo usado: ${timeSpent}`;
-      } catch (error) {
-        alert("Error al guardar los resultados: " + error.message);
-      }
-    }
-  </script>
+        function generateQuiz() {
+            const quizDiv = document.getElementById('quiz');
+            quizDiv.innerHTML = '';
+            questions.forEach((q, index) => {
+                const questionElem = document.createElement('div');
+                questionElem.innerHTML = `<p>${index + 1}. ${q.question}</p>`;
+                q.options.forEach((opt, i) => {
+                    questionElem.innerHTML += `
+                        <label>
+                            <input type="radio" name="q${index}" value="${i}"> ${opt}
+                        </label><br>`;
+                });
+                quizDiv.appendChild(questionElem);
+            });
+
+            document.getElementById('finishBtn').style.display = 'inline-block';
+            startTimer(); // Iniciar el temporizador cuando se genera el quiz
+        }
+
+        function startTimer() {
+            let timeRemaining = 120; // 2 minutos en segundos
+            const timerDisplay = document.getElementById('timer');
+            timerDisplay.textContent = `Tiempo restante: ${formatTime(timeRemaining)}`;
+
+            intervalId = setInterval(() => {
+                timeRemaining--;
+                timerDisplay.textContent = `Tiempo restante: ${formatTime(timeRemaining)}`;
+                if (timeRemaining <= 0) {
+                    clearInterval(intervalId);
+                    finishQuiz(); // Finalizar el quiz si se acaba el tiempo
+                    alert("Se acabó el tiempo!");
+                }
+            }, 1000);
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+        }
+
+        async function finishQuiz() {
+            clearInterval(intervalId); // Detener el temporizador
+            let score = 0;
+
+            questions.forEach((q, index) => {
+                const radios = document.getElementsByName(`q${index}`);
+                for (let i = 0; i < radios.length; i++) {
+                    if (radios[i].checked && parseInt(radios[i].value) === q.correct) {
+                        score++;
+                        break;
+                    }
+                }
+            });
+
+            //const timeSpent = "2m 00s";  Obtener el tiempo real
+            const endTime = new Date();
+            const startTime = new Date(endTime.getTime() - 120000); // Suponiendo 2 minutos
+            const timeSpent = "2:00"; //Esto hay que calcularlo.
+            const testData = {
+                score: score,
+                time: timeSpent,
+                timestamp: endTime.toISOString()
+            };
+
+            try {
+                const userRef = window.doc(window.firestore, "usuarios", currentUser);
+                await window.updateDoc(userRef, {
+                    test1:  testData // Guarda los resultados en el campo test1
+                });
+
+                document.getElementById('result').innerHTML = `Puntaje: ${score}/${questions.length}<br>Tiempo usado: ${timeSpent}`;
+            } catch (error) {
+                alert("Error al guardar los resultados: " + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
+
 
 </body>
 </html>
