@@ -58,6 +58,16 @@
             margin-top: 20px;
         }
     </style>
+</head>
+<body>
+
+    <h1>Test de la Primera Ley de Newton</h1>
+    <div id="timer">Tiempo restante: 2:00</div>
+    <div id="quiz"></div>
+    <button class="button" id="startButton">Iniciar Test</button>
+    <a class="button" id="finishBtn" style="display:none;">Finalizar</a>
+    <div id="result"></div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
@@ -73,123 +83,18 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        window.firestore = db;
-        window.doc = doc;
-        window.updateDoc = updateDoc;
 
-    </script>
-</head>
-<body>
-
-    <h1>Test de la Primera Ley de Newton</h1>
-    <div id="timer">Tiempo restante: 2:00</div>
-    <div id="quiz"></div>
-    <button class="button" id="startButton" >Iniciar Test</button>
-    <a class="button" id="finishBtn" onclick="finishQuiz()" style="display:none;">Finalizar</a>
-    <div id="result"></div>
-
-    <script type="module">
         const questions = [
-            {
-                question: "¿Qué establece la Primera Ley de Newton?",
-                options: [
-                    "Un objeto cambia su estado solo si una fuerza externa actúa sobre él",
-                    "Todo objeto posee energía cinética",
-                    "La fuerza es igual a la masa por la aceleración",
-                    "Toda acción tiene una reacción igual y opuesta"
-                ],
-                answer: 0
-            },
-            {
-                question: "¿Qué es la inercia?",
-                options: [
-                    "La energía potencial almacenada en un objeto",
-                    "La tendencia de un cuerpo a acelerar",
-                    "La propiedad de resistirse al cambio de movimiento",
-                    "La dirección de la fuerza aplicada"
-                ],
-                answer: 2
-            },
-            {
-                question: "Si una silla está en reposo, ¿qué debe ocurrir para que se mueva?",
-                options: [
-                    "Aumentar su masa",
-                    "Reducir la fricción",
-                    "Aplicar una fuerza externa",
-                    "Que pase el tiempo"
-                ],
-                answer: 2
-            },
-            {
-                question: "Una sonda espacial sigue en línea recta y velocidad constante porque:",
-                options: [
-                    "Está acelerando",
-                    "No hay fuerzas actuando sobre ella",
-                    "La gravedad la empuja",
-                    "Tiene un cohete encendido"
-                ],
-                answer: 1
-            },
-            {
-                question: "¿Qué ocurre si la suma de las fuerzas sobre un objeto es cero?",
-                options: [
-                    "Se acelera rápidamente",
-                    "Se detiene automáticamente",
-                    "Sigue en reposo o en movimiento constante",
-                    "Pierde masa"
-                ],
-                answer: 2
-            },
-            {
-                question: "¿Cuál de estos es un ejemplo de inercia?",
-                options: [
-                    "Una pelota se detiene al ser pateada",
-                    "Un auto frena por sí solo",
-                    "Un objeto permanece quieto si nadie lo empuja",
-                    "Un avión gira por el viento"
-                ],
-                answer: 2
-            },
-            {
-                question: "¿Qué fuerzas actúan sobre una moto que va a velocidad constante?",
-                options: [
-                    "Solo la gravedad",
-                    "Ninguna",
-                    "Fuerzas opuestas que se equilibran",
-                    "Fuerza positiva únicamente"
-                ],
-                answer: 2
-            },
-            {
-                question: "Si un objeto se mueve a velocidad constante, entonces:",
-                options: [
-                    "La aceleración es cero",
-                    "Se está frenando",
-                    "La inercia desaparece",
-                    "La masa cambia"
-                ],
-                answer: 0
-            },
-            {
-                question: "¿Qué representa un diagrama de cuerpo libre?",
-                options: [
-                    "Un objeto con velocidad",
-                    "Fuerzas aplicadas sobre un objeto",
-                    "La dirección del viento",
-                    "Un análisis térmico"
-                ],
-                answer: 1
-            },
-            {
-                question: "¿Qué ocurre si un objeto no experimenta ninguna fuerza neta?",
-                options: [
-                    "Se deforma",
-                    "Se detiene de inmediato",
-                    "Mantiene su estado de movimiento",
-                    "Se acelera"
-                ],
-                answer: 2
-            }
+            { question: "¿Qué establece la Primera Ley de Newton?", options: ["Un objeto cambia su estado solo si una fuerza externa actúa sobre él", "Todo objeto posee energía cinética", "La fuerza es igual a la masa por la aceleración", "Toda acción tiene una reacción igual y opuesta"], answer: 0 },
+            { question: "¿Qué es la inercia?", options: ["La energía potencial almacenada en un objeto", "La tendencia de un cuerpo a acelerar", "La propiedad de resistirse al cambio de movimiento", "La dirección de la fuerza aplicada"], answer: 2 },
+            { question: "Si una silla está en reposo, ¿qué debe ocurrir para que se mueva?", options: ["Aumentar su masa", "Reducir la fricción", "Aplicar una fuerza externa", "Que pase el tiempo"], answer: 2 },
+            { question: "Una sonda espacial sigue en línea recta y velocidad constante porque:", options: ["Está acelerando", "No hay fuerzas actuando sobre ella", "La gravedad la empuja", "Tiene un cohete encendido"], answer: 1 },
+            { question: "¿Qué ocurre si la suma de las fuerzas sobre un objeto es cero?", options: ["Se acelera rápidamente", "Se detiene automáticamente", "Sigue en reposo o en movimiento constante", "Pierde masa"], answer: 2 },
+            { question: "¿Cuál de estos es un ejemplo de inercia?", options: ["Una pelota se detiene al ser pateada", "Un auto frena por sí solo", "Un objeto permanece quieto si nadie lo empuja", "Un avión gira por el viento"], answer: 2 },
+            { question: "¿Qué fuerzas actúan sobre una moto que va a velocidad constante?", options: ["Solo la gravedad", "Ninguna", "Fuerzas opuestas que se equilibran", "Fuerza positiva únicamente"], answer: 2 },
+            { question: "Si un objeto se mueve a velocidad constante, entonces:", options: ["La aceleración es cero", "Se está frenando", "La inercia desaparece", "La masa cambia"], answer: 0 },
+            { question: "¿Qué representa un diagrama de cuerpo libre?", options: ["Un objeto con velocidad", "Fuerzas aplicadas sobre un objeto", "La dirección del viento", "Un análisis térmico"], answer: 1 },
+            { question: "¿Qué ocurre si un objeto no experimenta ninguna fuerza neta?", options: ["Se deforma", "Se detiene de inmediato", "Mantiene su estado de movimiento", "Se acelera"], answer: 2 }
         ];
 
         let selectedQuestions = [];
@@ -198,9 +103,8 @@
         let timerInterval;
         let secondsLeft = 120;
         let startTime;
-        let currentUser; // Variable para almacenar el nombre de usuario
+        let currentUser;
 
-        // Función para obtener el nombre de usuario del localStorage
         function getUsuario() {
             currentUser = localStorage.getItem('usuario');
             if (!currentUser) {
@@ -229,8 +133,6 @@
             }, 1000);
         }
 
-
-
         async function finishQuiz(timeOut = false) {
             clearInterval(timerInterval);
             document.getElementById('finishBtn').style.display = 'none';
@@ -248,23 +150,22 @@
             const seconds = elapsedTime % 60;
             const timeSpent = `${minutes}m ${seconds}s`;
 
-            const resultText = `Puntaje: ${score}/10<br>Tiempo usado: ${minutes}m ${seconds}s` +
+            const resultText = `Puntaje: ${score}/10<br>Tiempo usado: ${timeSpent}` +
                 (timeOut ? "<br><span style='color:red;'>Tiempo agotado</span>" : "");
 
             document.getElementById('result').innerHTML = resultText;
 
             try {
                 const usuario = getUsuario();
-                const usuarioRef = window.doc(window.firestore, "usuarios", usuario);
-                await window.updateDoc(usuarioRef, {
-                    test1: {  // Guarda los datos del test1
+                const usuarioRef = doc(db, "usuarios", usuario);
+                await updateDoc(usuarioRef, {
+                    test1: {
                         score: score,
                         time: timeSpent,
                         timestamp: endTime
                     }
                 });
                 alert('Resultados guardados correctamente');
-
             } catch (error) {
                 console.error("Error al guardar en Firestore:", error);
                 alert('Error al guardar los resultados. Por favor, inténtelo de nuevo.');
@@ -280,28 +181,25 @@
             document.getElementById('startButton').style.display = 'none';
             document.getElementById('finishBtn').style.display = 'block';
             const quizContainer = document.getElementById('quiz');
-            quizContainer.innerHTML = ''; // Limpia el contenido anterior
+            quizContainer.innerHTML = '';
             selectedQuestions = questions.sort(() => 0.5 - Math.random()).slice(0, 5);
 
             selectedQuestions.forEach((q, index) => {
                 const questionDiv = document.createElement('div');
                 questionDiv.className = 'question';
-                const questionTitle = document.createElement('h3');
-                questionTitle.textContent = `Pregunta ${index + 1}: ${q.question}`;
-                questionDiv.appendChild(questionTitle);
-
+                questionDiv.innerHTML = `<strong>${index + 1}. ${q.question}</strong>`;
                 const optionsList = document.createElement('ul');
                 optionsList.className = 'options';
 
                 q.options.forEach((option, i) => {
-                    const optionItem = document.createElement('li');
-                    optionItem.textContent = option;
-                    optionItem.onclick = () => {
+                    const li = document.createElement('li');
+                    li.textContent = option;
+                    li.addEventListener('click', () => {
+                        [...optionsList.children].forEach(child => child.classList.remove('selected'));
+                        li.classList.add('selected');
                         userAnswers[index] = i;
-                        [...optionsList.children].forEach(li => li.classList.remove('selected'));
-                        optionItem.classList.add('selected');
-                    };
-                    optionsList.appendChild(optionItem);
+                    });
+                    optionsList.appendChild(li);
                 });
 
                 questionDiv.appendChild(optionsList);
@@ -311,11 +209,12 @@
             startTimer();
         }
 
-        //Verifica que el usuario este logeado y empieza el test
-        window.onload = () => {
-            getUsuario();
+        document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('startButton').addEventListener('click', startQuiz);
-        }
+            document.getElementById('finishBtn').addEventListener('click', () => finishQuiz(false));
+        });
     </script>
+
 </body>
 </html>
+
