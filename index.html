@@ -40,6 +40,10 @@
             nombre: nombreUsuario,
             tests: []
           });
+
+          // ✅ Guardar nombre en localStorage para usar en otras páginas
+          localStorage.setItem("usuario", nombreUsuario);
+
           // Redirigir
           window.location.href = "seleccion.html";
         } catch (error) {
