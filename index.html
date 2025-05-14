@@ -5,15 +5,53 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Formulario de Inicio de Sesión</title>
 
+  <!-- Incluir Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+    // Configuración de Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
+      authDomain: "base-de-datos-usuarios-433da.firebaseapp.com",
+      projectId: "base-de-datos-usuarios-433da",
+      storageBucket: "base-de-datos-usuarios-433da.firebasestorage.app",
+      messagingSenderId: "563969031549",
+      appId: "1:563969031549:web:66c35b0e769d73b31d2014"
+    };
+
+    // Inicialización de Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    
+    // Función para verificar usuario
+    function verificarUsuario() {
+      let usuario = document.getElementById("usuario").value.trim();
+
+      if (usuario !== "") {
+        // Guardar el nombre del usuario en la base de datos
+        set(ref(database, 'usuarios/' + usuario), {
+          nombre: usuario,
+          tests: [] // Al principio no tiene tests realizados
+        });
+
+        // Redirigir al usuario a la página de selección de tests
+        window.location.href = "seleccion.html"; // Redirige si hay texto
+      } else {
+        alert("Por favor, ingresa tu nombre de usuario.");
+      }
+    }
+  </script>
+
   <style>
     /* === ESTILOS GENERALES DEL BODY === */
     body {
       margin: 0;
       height: 100vh;
-      display: flex;                   
-      justify-content: center;         
-      align-items: center;             
-      background-color: #f2f2f2;       
+      display: flex;                   /* Activa el sistema Flexbox */
+      justify-content: center;         /* Centra horizontalmente */
+      align-items: center;             /* Centra verticalmente */
+      background-color: #f2f2f2;       /* Fondo celeste claro */
     }
 
     /* === EFECTO DE ENTRADA ANIMADA === */
@@ -46,17 +84,20 @@
       text-align: center;
     }
 
+    /* === TÍTULO O IMAGEN SUPERIOR === */
     .app-title h1 {
       margin: 0 0 20px 0;
     }
 
+    /* === FORMULARIO DE USUARIO === */
     .login-form {
       display: flex;
       flex-direction: column;
-      align-items: center;
+      align-items: center; /* Centra los elementos del formulario */
       width: 100%;
     }
 
+    /* === CAMPO DE TEXTO PARA EL USUARIO === */
     .login-field {
       width: 100%;
       padding: 10px;
@@ -66,9 +107,10 @@
       font-size: 14px;
     }
 
+    /* === BOTÓN DE INICIO DE SESIÓN === */
     .login-button {
       padding: 12px 24px;
-      background-color: #4CAF50;
+      background-color: #4CAF50;     /* Verde */
       color: white;
       border: none;
       border-radius: 8px;
@@ -78,70 +120,37 @@
     }
 
     .login-button:hover {
-      background-color: #45a049;
+      background-color: #45a049;     /* Verde más oscuro al pasar el mouse */
     }
   </style>
 </head>
 
 <body>
 
+  <!-- Contenedor con animación -->
   <div class="deslizar">
+
+    <!-- Cuadro del formulario -->
     <div class="elemento">
+
+      <!-- Imagen o título del formulario -->
       <div class="app-title">
         <h1>
           <img src="usuarioo.png" alt="Usuario" width="200" height="200">
         </h1>
       </div>
 
+      <!-- Formulario de inicio de sesión -->
       <div class="login-form">
         <input type="text" class="login-field" id="usuario" placeholder="Usuario">
+
+        <!-- Botón para verificar usuario y avanzar -->
         <button class="login-button" onclick="verificarUsuario()">Entrar</button>
       </div>
-    </div>
-  </div>
 
-  <!-- Incluir Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+    </div> <!-- Fin del cuadro .elemento -->
 
-  <!-- Script para Firebase y verificar usuario -->
-  <script>
-    // Configuración de Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
-      authDomain: "base-de-datos-usuarios-433da.firebaseapp.com",
-      projectId: "base-de-datos-usuarios-433da",
-      storageBucket: "base-de-datos-usuarios-433da.firebasestorage.app",
-      messagingSenderId: "563969031549",
-      appId: "1:563969031549:web:66c35b0e769d73b31d2014"
-    };
-
-    // Inicializar Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    // Función para verificar y guardar el usuario en Firebase
-    function verificarUsuario() {
-      let usuario = document.getElementById("usuario").value.trim();
-
-      if (usuario !== "") {
-        // Guardar el nombre del usuario en Firebase Firestore
-        db.collection("usuarios").add({
-          nombre: usuario
-        })
-        .then(() => {
-          console.log("Usuario guardado correctamente");
-          window.location.href = "seleccion.html";  // Redirigir si todo está bien
-        })
-        .catch((error) => {
-          console.error("Error al guardar el usuario: ", error);
-        });
-      } else {
-        alert("Por favor, ingresa tu nombre de usuario.");
-      }
-    }
-  </script>
+  </div> <!-- Fin del contenedor .deslizar -->
 
 </body>
 </html>
-
