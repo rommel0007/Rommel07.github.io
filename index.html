@@ -8,37 +8,43 @@
   <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-    // Hacer disponibles las funciones y objetos para el script global
-    window.firebaseApp = initializeApp({
+    // Configuración Firebase
+    const firebaseConfig = {
       apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
       authDomain: "base-de-datos-usuarios-433da.firebaseapp.com",
       projectId: "base-de-datos-usuarios-433da",
       storageBucket: "base-de-datos-usuarios-433da.appspot.com",
       messagingSenderId: "563969031549",
       appId: "1:563969031549:web:66c35b0e769d73b31d2014"
-    });
+    };
 
-    window.firebaseDatabase = getDatabase(firebaseApp);
-    window.firebaseRef = ref;
-    window.firebaseSet = set;
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Guardar el objeto Firestore en global para acceder desde fuera
+    window.firestore = db;
+    window.setDoc = setDoc;
+    window.doc = doc;
   </script>
 
-  <!-- Script con lógica fuera del módulo -->
   <script>
-    function verificarUsuario() {
-      const usuario = document.getElementById("usuario").value.trim();
-      if (usuario !== "") {
-        // Usamos los objetos de Firebase cargados globalmente
-        window.firebaseSet(window.firebaseRef(window.firebaseDatabase, 'usuarios/' + usuario), {
-          nombre: usuario,
-          tests: []
-        }).then(() => {
+    async function verificarUsuario() {
+      const nombreUsuario = document.getElementById("usuario").value.trim();
+      if (nombreUsuario !== "") {
+        try {
+          // Guardar en Firestore en la colección "usuarios" con ID = nombreUsuario
+          await window.setDoc(window.doc(window.firestore, "usuarios", nombreUsuario), {
+            nombre: nombreUsuario,
+            tests: []
+          });
+          // Redirigir
           window.location.href = "seleccion.html";
-        }).catch((error) => {
-          alert("Error al guardar el usuario: " + error);
-        });
+        } catch (error) {
+          alert("Error al guardar el usuario: " + error.message);
+        }
       } else {
         alert("Por favor, ingresa tu nombre de usuario.");
       }
@@ -46,11 +52,94 @@
   </script>
 
   <style>
-    /* ... (los estilos que ya tienes) ... */
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f2f2f2;
+    }
+
+    .deslizar {
+      animation: deslizarAbajo 1s ease-out forwards;
+    }
+
+    @keyframes deslizarAbajo {
+      from {
+        transform: translateY(-100px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .elemento {
+      width: 300px;
+      padding: 60px;
+      border: 10px solid #e3e3e3;
+      border-radius: 20px;
+      background-color: #f4f4f4;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .app-title h1 {
+      margin: 0 0 20px 0;
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .login-field {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .login-button {
+      padding: 12px 24px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .login-button:hover {
+      background-color: #45a049;
+    }
   </style>
 </head>
 
 <body>
-  <!-- ... (el contenido que ya tienes) ... -->
+  <div class="deslizar">
+    <div class="elemento">
+      <div class="app-title">
+        <h1>
+          <img src="usuarioo.png" alt="Usuario" width="200" height="200">
+        </h1>
+      </div>
+      <div class="login-form">
+        <input type="text" class="login-field" id="usuario" placeholder="Usuario">
+        <button class="login-button" onclick="verificarUsuario()">Entrar</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
+
