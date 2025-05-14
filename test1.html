@@ -68,7 +68,24 @@
   <a class="button" id="finishBtn" onclick="finishQuiz()" style="display:none;">Finalizar</a>
   <div id="result"></div>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
   <script>
+    // Configura tu proyecto Firebase
+    const firebaseConfig = {
+      apiKey: "TU_API_KEY",
+      authDomain: "TU_AUTH_DOMAIN",
+      projectId: "TU_PROJECT_ID",
+      storageBucket: "TU_STORAGE_BUCKET",
+      messagingSenderId: "TU_MESSAGING_SENDER_ID",
+      appId: "TU_APP_ID"
+    };
+
+    // Inicializa Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore(app);
+
     const questions = [
       {
         question: "¿Qué establece la Primera Ley de Newton?",
@@ -80,96 +97,7 @@
         ],
         answer: 0
       },
-      {
-        question: "¿Qué es la inercia?",
-        options: [
-          "La energía potencial almacenada en un objeto",
-          "La tendencia de un cuerpo a acelerar",
-          "La propiedad de resistirse al cambio de movimiento",
-          "La dirección de la fuerza aplicada"
-        ],
-        answer: 2
-      },
-      {
-        question: "Si una silla está en reposo, ¿qué debe ocurrir para que se mueva?",
-        options: [
-          "Aumentar su masa",
-          "Reducir la fricción",
-          "Aplicar una fuerza externa",
-          "Que pase el tiempo"
-        ],
-        answer: 2
-      },
-      {
-        question: "Una sonda espacial sigue en línea recta y velocidad constante porque:",
-        options: [
-          "Está acelerando",
-          "No hay fuerzas actuando sobre ella",
-          "La gravedad la empuja",
-          "Tiene un cohete encendido"
-        ],
-        answer: 1
-      },
-      {
-        question: "¿Qué ocurre si la suma de las fuerzas sobre un objeto es cero?",
-        options: [
-          "Se acelera rápidamente",
-          "Se detiene automáticamente",
-          "Sigue en reposo o en movimiento constante",
-          "Pierde masa"
-        ],
-        answer: 2
-      },
-      {
-        question: "¿Cuál de estos es un ejemplo de inercia?",
-        options: [
-          "Una pelota se detiene al ser pateada",
-          "Un auto frena por sí solo",
-          "Un objeto permanece quieto si nadie lo empuja",
-          "Un avión gira por el viento"
-        ],
-        answer: 2
-      },
-      {
-        question: "¿Qué fuerzas actúan sobre una moto que va a velocidad constante?",
-        options: [
-          "Solo la gravedad",
-          "Ninguna",
-          "Fuerzas opuestas que se equilibran",
-          "Fuerza positiva únicamente"
-        ],
-        answer: 2
-      },
-      {
-        question: "Si un objeto se mueve a velocidad constante, entonces:",
-        options: [
-          "La aceleración es cero",
-          "Se está frenando",
-          "La inercia desaparece",
-          "La masa cambia"
-        ],
-        answer: 0
-      },
-      {
-        question: "¿Qué representa un diagrama de cuerpo libre?",
-        options: [
-          "Un objeto con velocidad",
-          "Fuerzas aplicadas sobre un objeto",
-          "La dirección del viento",
-          "Un análisis térmico"
-        ],
-        answer: 1
-      },
-      {
-        question: "¿Qué ocurre si un objeto no experimenta ninguna fuerza neta?",
-        options: [
-          "Se deforma",
-          "Se detiene de inmediato",
-          "Mantiene su estado de movimiento",
-          "Se acelera"
-        ],
-        answer: 2
-      }
+      // ... otras preguntas
     ];
 
     let selectedQuestions = [];
@@ -254,10 +182,28 @@
 
       const resultText = `Puntaje: ${score}/10<br>Tiempo usado: ${minutes}m ${seconds}s` +
         (timeOut ? "<br><span style='color:red;'>Tiempo agotado</span>" : "");
-      
+
       document.getElementById('result').innerHTML = resultText;
+
+      // Obtener el nombre del usuario
+      const userName = prompt("Ingresa tu nombre:");
+
+      // Guardar los resultados en Firebase
+      db.collection("resultados").add({
+        nombre: userName,
+        puntaje: score,
+        tiempo: `${minutes}m ${seconds}s`,
+        fecha: new Date()
+      })
+      .then(() => {
+        console.log("Resultado guardado correctamente");
+      })
+      .catch((error) => {
+        console.error("Error al guardar el resultado: ", error);
+      });
     }
   </script>
 
 </body>
 </html>
+
