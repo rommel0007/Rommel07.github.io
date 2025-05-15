@@ -1,89 +1,135 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <title>Tabla de Posiciones</title>
+  <meta charset="UTF-8">
+  <title>Ranking de Usuarios</title>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      background-color: #e9f5ec;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #2e7d32;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: white;
+    }
+    th, td {
+      border: 1px solid #c8e6c9;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #a5d6a7;
+      color: #1b5e20;
+    }
+    tr:nth-child(even) {
+      background-color: #f1f8e9;
+    }
+    .top {
+      background-color: #c5e1a5 !important;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-  <h1>Tabla de Posiciones</h1>
-  <div id="tabla"></div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+  <h1>Ranking de Usuarios</h1>
+  <table id="rankingTable">
+    <thead>
+      <tr>
+        <th>Posición</th>
+        <th>Usuario</th>
+        <th>Test 1 (Puntaje / Tiempo)</th>
+        <th>Test 2 (Puntaje / Tiempo)</th>
+        <th>Test 3 (Puntaje / Tiempo)</th>
+        <th>Prom. Puntaje</th>
+        <th>Prom. Tiempo</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
+  <script>
+    // === Firebase Config ===
     const firebaseConfig = {
-      apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
-      authDomain: "base-de-datos-usuarios-433da.firebaseapp.com",
-      projectId: "base-de-datos-usuarios-433da",
-      storageBucket: "base-de-datos-usuarios-433da.firebasestorage.app",
-      messagingSenderId: "563969031549",
-      appId: "1:563969031549:web:66c35b0e769d73b31d2014"
+      apiKey: "TU_API_KEY",
+      authDomain: "TU_AUTH_DOMAIN",
+      projectId: "TU_PROJECT_ID",
+      storageBucket: "TU_BUCKET",
+      messagingSenderId: "TU_SENDER_ID",
+      appId: "TU_APP_ID"
     };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    // === Funciones ===
+    function tiempoASegundos(texto) {
+      const match = texto.match(/(\d+)m\s*(\d+)s/);
+      return match ? parseInt(match[1]) * 60 + parseInt(match[2]) : 9999;
+    }
 
-    async function cargarResultados() {
-      const snapshot = await getDocs(collection(db, "usuarios"));
+    function promedio(valores) {
+      const nums = valores.filter(v => !isNaN(v));
+      return nums.length ? (nums.reduce((a,b) => a + b, 0) / nums.length).toFixed(2) : 'N/A';
+    }
+
+    async function cargarRanking() {
+      const snapshot = await db.collection("resultados").get();
       const usuarios = [];
 
       snapshot.forEach(doc => {
         const data = doc.data();
-        const r = data.resultados || {};
-
-        let totalNota = 0, totalTiempo = 0, n = 0;
-        ["test1", "test2", "test3"].forEach(k => {
-          if (r[k]) {
-            totalNota += r[k].nota || 0;
-            totalTiempo += r[k].tiempo || 0;
-            n++;
-          }
-        });
-
-        const promedioNota = n ? totalNota / n : 0;
-        const promedioTiempo = n ? totalTiempo / n : 0;
-
-        usuarios.push({
-          nombre: data.nombre,
-          promedioNota,
-          promedioTiempo,
-          resultados: r
-        });
+        const u = { nombre: doc.id };
+        u.puntajes = [
+          data.test1?.puntaje ?? null,
+          data.test2?.puntaje ?? null,
+          data.test3?.puntaje ?? null
+        ];
+        u.tiempos = [
+          tiempoASegundos(data.test1?.tiempo ?? ""),
+          tiempoASegundos(data.test2?.tiempo ?? ""),
+          tiempoASegundos(data.test3?.tiempo ?? "")
+        ];
+        u.promPuntaje = promedio(u.puntajes.map(x => x ?? NaN));
+        u.promTiempo = promedio(u.tiempos);
+        usuarios.push(u);
       });
 
       usuarios.sort((a, b) => {
-        if (b.promedioNota !== a.promedioNota) return b.promedioNota - a.promedioNota;
-        return a.promedioTiempo - b.promedioTiempo;
+        const p1 = parseFloat(b.promPuntaje);
+        const p2 = parseFloat(a.promPuntaje);
+        if (p1 !== p2) return p1 - p2;
+        return parseFloat(a.promTiempo) - parseFloat(b.promTiempo);
       });
 
-      mostrarTabla(usuarios);
-    }
-
-    function mostrarTabla(usuarios) {
-      let html = "<table border='1'><tr><th>Posición</th><th>Nombre</th><th>TEST1</th><th>TEST2</th><th>TEST3</th><th>Nota Promedio</th><th>Tiempo Promedio (seg)</th></tr>";
-
+      const tbody = document.querySelector("#rankingTable tbody");
+      tbody.innerHTML = "";
       usuarios.forEach((u, i) => {
-        const r = u.resultados;
-        html += `<tr>
+        const tr = document.createElement("tr");
+        if (i === 0) tr.classList.add("top");
+        tr.innerHTML = `
           <td>${i + 1}</td>
           <td>${u.nombre}</td>
-          <td>${mostrar(r.test1)}</td>
-          <td>${mostrar(r.test2)}</td>
-          <td>${mostrar(r.test3)}</td>
-          <td>${u.promedioNota.toFixed(2)}</td>
-          <td>${u.promedioTiempo.toFixed(2)}</td>
-        </tr>`;
+          <td>${u.puntajes[0] ?? '—'} / ${isNaN(u.tiempos[0]) ? '—' : u.tiempos[0] + 's'}</td>
+          <td>${u.puntajes[1] ?? '—'} / ${isNaN(u.tiempos[1]) ? '—' : u.tiempos[1] + 's'}</td>
+          <td>${u.puntajes[2] ?? '—'} / ${isNaN(u.tiempos[2]) ? '—' : u.tiempos[2] + 's'}</td>
+          <td><strong>${u.promPuntaje}</strong></td>
+          <td>${u.promTiempo}s</td>
+        `;
+        tbody.appendChild(tr);
       });
-
-      html += "</table>";
-      document.getElementById("tabla").innerHTML = html;
     }
 
-    function mostrar(test) {
-      return test ? `Nota: ${test.nota}, Tiempo: ${test.tiempo}s` : "N/A";
-    }
-
-    cargarResultados();
+    window.onload = cargarRanking;
   </script>
+
 </body>
 </html>
