@@ -209,7 +209,9 @@
       startTimer();
     }
 
+    // Asegurarse de que el evento se asocie correctamente al cargar la página
     document.addEventListener('DOMContentLoaded', () => {
+      console.log('Document loaded');
       document.getElementById('startButton').addEventListener('click', startQuiz);
       document.getElementById('finishBtn').addEventListener('click', () => finishQuiz(false));
     });
