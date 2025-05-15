@@ -1,59 +1,76 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <title>Test de la Tercera Ley de Newton</title>
+    <meta charset="UTF-8">
+    <title>Test de la Segunda Ley de Newton</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
             padding: 20px;
         }
-        header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
+        h1 {
+            text-align: center;
         }
         .question {
-            margin-bottom: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
         }
         .options {
-            list-style: none;
+            list-style-type: none;
             padding: 0;
         }
         .options li {
-            padding: 5px;
-            border: 1px solid #ccc;
-            margin-top: 5px;
+            margin-bottom: 5px;
             cursor: pointer;
+            padding: 5px;
+            border-radius: 3px;
         }
-        .options li.selected {
-            background-color: #cce5ff;
+        .options li:hover {
+            background-color: #e0e0e0;
+        }
+        .selected {
+            background-color: #d3d3d3;
         }
         .button {
-            display: inline-block;
-            margin: 10px 5px;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #007BFF;
+            color: #fff;
+            text-align: center;
             border-radius: 5px;
             cursor: pointer;
-            border: none;
-            font-size: 16px;
+            text-decoration: none;
+        }
+        #timer {
+            text-align: center;
+            font-size: 18px;
+            margin: 15px;
         }
         #result {
+            text-align: center;
             font-weight: bold;
             margin-top: 20px;
         }
-        #timer {
-            font-size: 18px;
-        }
     </style>
+</head>
+<body>
+
+    <h1>Test de la Segunda Ley de Newton</h1>
+    <div id="timer">Tiempo restante: 2:00</div>
+    <div id="quiz"></div>
+    <button class="button" id="startButton">Iniciar Test</button>
+    <a class="button" id="finishBtn" style="display:none;">Finalizar</a>
+    <div id="result"></div>
+
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
@@ -66,75 +83,18 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        window.firestore = db;
-        window.collection = collection;
-        window.addDoc = addDoc;
 
-    </script>
-</head>
-<body>
-    <header>
-        <h1>Test de la Tercera Ley de Newton</h1>
-        <div id="timer">Tiempo restante: 2:00</div>
-        <button class="button" id="startButton">¡Realiza el intento!</button>
-    </header>
-
-    <div id="quiz"></div>
-    <button class="button" id="finishBtn" style="display:none;">Finalizar</button>
-    <div id="result"></div>
-
-    <script type="module">
         const questions = [
-            {
-                question: "¿Cuál es la fórmula de la segunda ley de Newton?",
-                options: ["F = m·a", "E = m·c²", "V = I·R", "P = m·g"],
-                answer: 0
-            },
-            {
-                question: "Si duplicas la masa, ¿qué pasa con la fuerza necesaria para mantener la misma aceleración?",
-                options: ["Se mantiene igual", "Se duplica", "Se reduce a la mitad", "No cambia"],
-                answer: 1
-            },
-            {
-                question: "¿Qué unidad se usa para medir la fuerza en el SI?",
-                options: ["Joule", "Newton", "Pascal", "Watt"],
-                answer: 1
-            },
-            {
-                question: "Un objeto de 4 kg acelera a 3 m/s². ¿Cuál es la fuerza aplicada?",
-                options: ["7 N", "1.33 N", "12 N", "0.75 N"],
-                answer: 2
-            },
-            {
-                question: "¿Qué relación existe entre fuerza neta y aceleración?",
-                options: ["Son inversamente proporcionales", "No están relacionadas", "La fuerza neta causa aceleración", "La aceleración causa masa"],
-                answer: 2
-            },
-            {
-                question: "¿Cuál de estas opciones representa una fuerza de 10 N aplicada a un objeto de 2 kg?",
-                options: ["10 m/s²", "5 m/s²", "20 m/s²", "2 m/s²"],
-                answer: 1
-            },
-            {
-                question: "Si un objeto no tiene fuerza neta, su aceleración es...",
-                options: ["Máxima", "Mínima", "Cero", "Infinita"],
-                answer: 2
-            },
-            {
-                question: "¿Cómo afecta la fuerza neta a un objeto en reposo?",
-                options: ["Lo mantiene en reposo", "Lo acelera", "Lo detiene", "Disminuye su masa"],
-                answer: 1
-            },
-            {
-                question: "¿Qué indica una aceleración negativa?",
-                options: ["Aumento de velocidad", "Disminución de masa", "Disminución de velocidad", "Aceleración constante"],
-                answer: 2
-            },
-            {
-                question: "¿Qué pasa si se aplica una fuerza constante a un objeto sin fricción?",
-                options: ["Acelera continuamente", "Se detiene", "Se mueve a velocidad constante", "Pierde masa"],
-                answer: 0
-            }
+            { question: "¿Qué expresa la Segunda Ley de Newton?", options: ["F = m/a", "F = m·a", "F = a/m", "F = m+v"], answer: 1 },
+            { question: "Si una fuerza neta actúa sobre un objeto, ¿qué ocurre?", options: ["No se mueve", "Cambia su masa", "Acelera", "Desaparece"], answer: 2 },
+            { question: "¿Qué unidades se usan para la fuerza en el Sistema Internacional?", options: ["Kg", "m/s", "Newton", "Pascal"], answer: 2 },
+            { question: "Si duplicas la masa y mantienes la aceleración, ¿qué pasa con la fuerza?", options: ["Se reduce", "No cambia", "Se duplica", "Se anula"], answer: 2 },
+            { question: "¿Qué es una aceleración?", options: ["Cambio de masa", "Cambio de velocidad por unidad de tiempo", "Distancia por tiempo", "Peso"], answer: 1 },
+            { question: "¿Qué ocurre si una fuerza neta es cero?", options: ["El objeto se acelera", "El objeto cambia de dirección", "El objeto mantiene su estado", "El objeto desaparece"], answer: 2 },
+            { question: "Si un cuerpo de 2kg acelera a 3 m/s², ¿qué fuerza neta actúa sobre él?", options: ["1.5 N", "6 N", "3 N", "2 N"], answer: 1 },
+            { question: "¿Qué representa un vector en una fuerza?", options: ["Cantidad de masa", "Velocidad constante", "Dirección y magnitud", "Color del objeto"], answer: 2 },
+            { question: "¿Qué relación hay entre fuerza y aceleración?", options: ["Inversamente proporcional", "No tienen relación", "Directamente proporcional", "Son iguales"], answer: 2 },
+            { question: "¿Qué ocurre si aumentamos la fuerza y mantenemos la masa?", options: ["La aceleración aumenta", "La masa disminuye", "El objeto se detiene", "La velocidad es cero"], answer: 0 }
         ];
 
         let selectedQuestions = [];
@@ -190,21 +150,22 @@
             const seconds = elapsedTime % 60;
             const timeSpent = `${minutes}m ${seconds}s`;
 
-            const resultText = `Puntaje: ${score}/10<br>Tiempo usado: ${minutes}m ${seconds}s` +
+            const resultText = `Puntaje: ${score}/10<br>Tiempo usado: ${timeSpent}` +
                 (timeOut ? "<br><span style='color:red;'>Tiempo agotado</span>" : "");
 
             document.getElementById('result').innerHTML = resultText;
 
             try {
                 const usuario = getUsuario();
-                await window.addDoc(window.collection(window.firestore, "test2_results"), {
-                    username: usuario,
-                    score: score,
-                    time: timeSpent,
-                    timestamp: endTime
+                const usuarioRef = doc(db, "usuarios", usuario);
+                await updateDoc(usuarioRef, {
+                    test2: {
+                        score: score,
+                        time: timeSpent,
+                        timestamp: endTime
+                    }
                 });
-                alert('Resultados guardados correctamente. Puntaje: ' + score + ' Tiempo: ' + timeSpent);
-
+                alert('Resultados guardados correctamente');
             } catch (error) {
                 console.error("Error al guardar en Firestore:", error);
                 alert('Error al guardar los resultados. Por favor, inténtelo de nuevo.');
@@ -218,7 +179,7 @@
             startTime = new Date();
             secondsLeft = 120;
             document.getElementById('startButton').style.display = 'none';
-            document.getElementById('finishBtn').style.display = 'inline-block';
+            document.getElementById('finishBtn').style.display = 'block';
             const quizContainer = document.getElementById('quiz');
             quizContainer.innerHTML = '';
             selectedQuestions = questions.sort(() => 0.5 - Math.random()).slice(0, 5);
@@ -226,22 +187,19 @@
             selectedQuestions.forEach((q, index) => {
                 const questionDiv = document.createElement('div');
                 questionDiv.className = 'question';
-                const questionTitle = document.createElement('h3');
-                questionTitle.textContent = `Pregunta ${index + 1}: ${q.question}`;
-                questionDiv.appendChild(questionTitle);
-
+                questionDiv.innerHTML = `<strong>${index + 1}. ${q.question}</strong>`;
                 const optionsList = document.createElement('ul');
                 optionsList.className = 'options';
 
                 q.options.forEach((option, i) => {
-                    const optionItem = document.createElement('li');
-                    optionItem.textContent = option;
-                    optionItem.onclick = () => {
+                    const li = document.createElement('li');
+                    li.textContent = option;
+                    li.addEventListener('click', () => {
+                        [...optionsList.children].forEach(child => child.classList.remove('selected'));
+                        li.classList.add('selected');
                         userAnswers[index] = i;
-                        [...optionsList.children].forEach(li => li.classList.remove('selected'));
-                        optionItem.classList.add('selected');
-                    };
-                    optionsList.appendChild(optionItem);
+                    });
+                    optionsList.appendChild(li);
                 });
 
                 questionDiv.appendChild(optionsList);
@@ -251,11 +209,11 @@
             startTimer();
         }
 
-        window.onload = () => {
-            getUsuario();
+        document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('startButton').addEventListener('click', startQuiz);
             document.getElementById('finishBtn').addEventListener('click', () => finishQuiz(false));
-        }
+        });
     </script>
+
 </body>
 </html>
