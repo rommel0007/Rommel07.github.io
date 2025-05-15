@@ -3,8 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Test: Tercera Ley de Newton</title>
-  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -60,34 +58,47 @@
       margin-top: 20px;
     }
   </style>
+
+  <!-- Firebase App -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "TU_API_KEY",
+      authDomain: "TU_AUTH_DOMAIN",
+      projectId: "TU_PROJECT_ID",
+      storageBucket: "TU_STORAGE_BUCKET",
+      messagingSenderId: "TU_SENDER_ID",
+      appId: "TU_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Referencias globales
+    window.db = db;
+    window.setDoc = setDoc;
+    window.doc = doc;
+    window.getDoc = getDoc;
+    window.updateDoc = updateDoc;
+  </script>
 </head>
 <body>
+
+  <div style="text-align: center; margin-bottom: 15px;">
+    <label for="username">Nombre de usuario:</label>
+    <input type="text" id="username" placeholder="Tu nombre" required>
+  </div>
 
   <h1>Test: Tercera Ley de Newton</h1>
   <div id="timer">Tiempo restante: 2:00</div>
   <div id="quiz"></div>
-  <a class="button" id="generateBtn" onclick="generateQuiz()">¡Iniciar test!</a>
+  <a class="button" id="generateBtn">¡Iniciar test!</a>
   <a class="button" id="finishBtn" onclick="finishQuiz()" style="display:none;">Finalizar</a>
   <div id="result"></div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
-            authDomain: "base-de-datos-usuarios-433da.firebaseapp.com",
-            projectId: "base-de-datos-usuarios-433da",
-            storageBucket: "base-de-datos-usuarios-433da.appspot.com",
-            messagingSenderId: "563969031549",
-            appId: "1:563969031549:web:66c35b0e769d73b31d2014"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-
-    // === Preguntas ===
+  <script>
     const questions = [
       {
         question: "¿Qué enuncia la tercera ley de Newton?",
@@ -218,6 +229,12 @@
 
     function generateQuiz() {
       if (quizStarted) return;
+      const username = document.getElementById('username').value.trim();
+      if (!username) {
+        alert("Por favor ingresa tu nombre antes de iniciar.");
+        return;
+      }
+
       quizStarted = true;
       userAnswers = [];
       startTime = new Date();
@@ -256,7 +273,7 @@
       startTimer();
     }
 
-    function finishQuiz(timeOut = false) {
+    async function finishQuiz(timeOut = false) {
       clearInterval(timer);
       document.getElementById('finishBtn').style.display = 'none';
       let score = 0;
@@ -271,25 +288,47 @@
       const elapsedTime = Math.floor((endTime - startTime) / 1000);
       const minutes = Math.floor(elapsedTime / 60);
       const seconds = elapsedTime % 60;
-      const tiempoTexto = `${minutes}m ${seconds}s`;
 
-      const resultText = `Puntaje: ${score}/10<br>Tiempo usado: ${tiempoTexto}` +
+      const resultText = `Puntaje: ${score}/10<br>Tiempo usado: ${minutes}m ${seconds}s` +
         (timeOut ? "<br><span style='color:red;'>Tiempo agotado</span>" : "");
+
       document.getElementById('result').innerHTML = resultText;
 
-      // === GUARDAR EN FIREBASE ===
-      const nombre = localStorage.getItem('nombreUsuario') || prompt("Ingresa tu nombre:");
-      localStorage.setItem('nombreUsuario', nombre);
+      const username = document.getElementById('username').value.trim();
+      if (!username) {
+        alert("Por favor ingresa tu nombre.");
+        return;
+      }
 
-      db.collection("resultados").doc(nombre).set({
-        test3: {
-          puntaje: score,
-          tiempo: tiempoTexto
+      try {
+        const userRef = window.doc(window.db, "resultados", username);
+        const userSnap = await window.getDoc(userRef);
+
+        if (userSnap.exists()) {
+          await window.updateDoc(userRef, {
+            test3: {
+              score: score,
+              time: `${minutes}m ${seconds}s`
+            }
+          });
+        } else {
+          await window.setDoc(userRef, {
+            test3: {
+              score: score,
+              time: `${minutes}m ${seconds}s`
+            }
+          });
         }
-      }, { merge: true })
-      .then(() => console.log("Resultado guardado para", nombre))
-      .catch(error => console.error("Error al guardar:", error));
+
+        console.log("Resultado guardado en Firebase.");
+      } catch (error) {
+        console.error("Error al guardar en Firebase:", error);
+      }
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('generateBtn').addEventListener('click', generateQuiz);
+    });
   </script>
 
 </body>
