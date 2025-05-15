@@ -159,7 +159,7 @@
         const usuario = getUsuario();
         const usuarioRef = doc(db, "usuarios", usuario);
         await updateDoc(usuarioRef, {
-          test3: {
+          test3: {  // Guardar en test3
             score: score,
             time: timeSpent,
             timestamp: endTime
@@ -210,11 +210,10 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('startButton').addEventListener('
-click', startQuiz);
-document.getElementById('finishBtn').addEventListener('click', () => finishQuiz(false));
-});
-</script>
+      document.getElementById('startButton').addEventListener('click', startQuiz);
+      document.getElementById('finishBtn').addEventListener('click', () => finishQuiz(false));
+    });
+  </script>
 
-</body> 
+</body>
 </html>
