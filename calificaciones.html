@@ -61,11 +61,11 @@
         // === Firebase Config ===
         const firebaseConfig = {
             apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
-  authDomain: "base-de-datos-usuarios-433da.firebaseapp.com",
-  projectId: "base-de-datos-usuarios-433da",
-  storageBucket: "base-de-datos-usuarios-433da.firebasestorage.app",
-  messagingSenderId: "563969031549",
-  appId: "1:563969031549:web:66c35b0e769d73b31d2014"
+            authDomain: "base-de-datos-usuarios-433da.firebaseapp.com",
+            projectId: "base-de-datos-usuarios-433da",
+            storageBucket: "base-de-datos-usuarios-433da.firebasestorage.app",
+            messagingSenderId: "563969031549",
+            appId: "1:563969031549:web:66c35b0e769d73b31d2014"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
@@ -73,11 +73,12 @@
         // === Funciones auxiliares ===
         function tiempoASegundos(texto) {
             const match = texto.match(/(\d+)m\s*(\d+)s/);
-            return match ? parseInt(match[1]) * 60 + parseInt(match[2]) : 9999;
+            return match ? parseInt(match[1]) * 60 + parseInt(match[2]) : 0; // Devuelve 0 si no hay match
         }
 
         function promedio(valores) {
-            const nums = valores.filter(v => !isNaN(v));
+            // Usa 0 en lugar de null para los valores faltantes
+            const nums = valores.map(v => v ?? 0);
             return nums.length ? (nums.reduce((a, b) => a + b, 0) / nums.length).toFixed(2) : 'N/A';
         }
 
@@ -96,16 +97,16 @@
                 const test3 = data.test3 || {};
 
                 u.puntajes = [
-                    test1.score ?? null,
-                    test2.score ?? null,
-                    test3.score ?? null
+                    test1.score ?? 0, // Usa 0 en lugar de null
+                    test2.score ?? 0,
+                    test3.score ?? 0
                 ];
                 u.tiempos = [
                     tiempoASegundos(test1.time ?? ""),
                     tiempoASegundos(test2.time ?? ""),
                     tiempoASegundos(test3.time ?? "")
                 ];
-                u.promPuntaje = promedio(u.puntajes.map(x => x ?? NaN));
+                u.promPuntaje = promedio(u.puntajes);
                 u.promTiempo = promedio(u.tiempos);
                 usuarios.push(u);
             });
