@@ -1,137 +1,142 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Ranking de Usuarios</title>
-  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
-  <style>
-    body {
-      background-color: #e9f5ec;
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-      color: #2e7d32;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background-color: white;
-    }
-    th, td {
-      border: 1px solid #c8e6c9;
-      padding: 10px;
-      text-align: center;
-    }
-    th {
-      background-color: #a5d6a7;
-      color: #1b5e20;
-    }
-    tr:nth-child(even) {
-      background-color: #f1f8e9;
-    }
-    .top {
-      background-color: #c5e1a5 !important;
-      font-weight: bold;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Ranking de Usuarios</title>
+    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
+    <style>
+        body {
+            background-color: #e9f5ec;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #2e7d32;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+        }
+        th, td {
+            border: 1px solid #c8e6c9;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #a5d6a7;
+            color: #1b5e20;
+        }
+        tr:nth-child(even) {
+            background-color: #f1f8e9;
+        }
+        .top {
+            background-color: #c5e1a5 !important;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 
-  <h1>Ranking de Usuarios</h1>
-  <table id="rankingTable">
-    <thead>
-      <tr>
-        <th>Posición</th>
-        <th>Usuario</th>
-        <th>Test 1 (Puntaje / Tiempo)</th>
-        <th>Test 2 (Puntaje / Tiempo)</th>
-        <th>Test 3 (Puntaje / Tiempo)</th>
-        <th>Prom. Puntaje</th>
-        <th>Prom. Tiempo</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+    <h1>Ranking de Usuarios</h1>
+    <table id="rankingTable">
+        <thead>
+            <tr>
+                <th>Posición</th>
+                <th>Usuario</th>
+                <th>Test 1 (Puntaje / Tiempo)</th>
+                <th>Test 2 (Puntaje / Tiempo)</th>
+                <th>Test 3 (Puntaje / Tiempo)</th>
+                <th>Prom. Puntaje</th>
+                <th>Prom. Tiempo</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 
-  <script>
-    // === Firebase Config ===
-    const firebaseConfig = {
-     apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
+    <script>
+        // === Firebase Config ===
+        const firebaseConfig = {
+            apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
   authDomain: "base-de-datos-usuarios-433da.firebaseapp.com",
   projectId: "base-de-datos-usuarios-433da",
   storageBucket: "base-de-datos-usuarios-433da.firebasestorage.app",
   messagingSenderId: "563969031549",
   appId: "1:563969031549:web:66c35b0e769d73b31d2014"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-    // === Funciones auxiliares ===
-    function tiempoASegundos(texto) {
-      const match = texto.match(/(\d+)m\s*(\d+)s/);
-      return match ? parseInt(match[1]) * 60 + parseInt(match[2]) : 9999;
-    }
+        // === Funciones auxiliares ===
+        function tiempoASegundos(texto) {
+            const match = texto.match(/(\d+)m\s*(\d+)s/);
+            return match ? parseInt(match[1]) * 60 + parseInt(match[2]) : 9999;
+        }
 
-    function promedio(valores) {
-      const nums = valores.filter(v => !isNaN(v));
-      return nums.length ? (nums.reduce((a,b) => a + b, 0) / nums.length).toFixed(2) : 'N/A';
-    }
+        function promedio(valores) {
+            const nums = valores.filter(v => !isNaN(v));
+            return nums.length ? (nums.reduce((a, b) => a + b, 0) / nums.length).toFixed(2) : 'N/A';
+        }
 
-    // === Cargar y mostrar ranking ===
-    async function cargarRanking() {
-      const snapshot = await db.collection("usuarios").get(); // <-- CAMBIO AQUÍ
-      const usuarios = [];
+        // === Cargar y mostrar ranking ===
+        async function cargarRanking() {
+            const snapshot = await db.collection("usuarios").get();
+            const usuarios = [];
 
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const u = { nombre: doc.id };
-        u.puntajes = [
-          data.test1?.puntaje ?? null,
-          data.test2?.puntaje ?? null,
-          data.test3?.puntaje ?? null
-        ];
-        u.tiempos = [
-          tiempoASegundos(data.test1?.tiempo ?? ""),
-          tiempoASegundos(data.test2?.tiempo ?? ""),
-          tiempoASegundos(data.test3?.tiempo ?? "")
-        ];
-        u.promPuntaje = promedio(u.puntajes.map(x => x ?? NaN));
-        u.promTiempo = promedio(u.tiempos);
-        usuarios.push(u);
-      });
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const u = { nombre: doc.id };
 
-      usuarios.sort((a, b) => {
-        const p1 = parseFloat(b.promPuntaje);
-        const p2 = parseFloat(a.promPuntaje);
-        if (p1 !== p2) return p1 - p2;
-        return parseFloat(a.promTiempo) - parseFloat(b.promTiempo);
-      });
+                // Acceder a los resultados de los tests anidados dentro de cada documento de usuario
+                const test1 = data.test1 || {};
+                const test2 = data.test2 || {};
+                const test3 = data.test3 || {};
 
-      const tbody = document.querySelector("#rankingTable tbody");
-      tbody.innerHTML = "";
-      usuarios.forEach((u, i) => {
-        const tr = document.createElement("tr");
-        if (i === 0) tr.classList.add("top");
-        tr.innerHTML = `
-          <td>${i + 1}</td>
-          <td>${u.nombre}</td>
-          <td>${u.puntajes[0] ?? '—'} / ${isNaN(u.tiempos[0]) ? '—' : u.tiempos[0] + 's'}</td>
-          <td>${u.puntajes[1] ?? '—'} / ${isNaN(u.tiempos[1]) ? '—' : u.tiempos[1] + 's'}</td>
-          <td>${u.puntajes[2] ?? '—'} / ${isNaN(u.tiempos[2]) ? '—' : u.tiempos[2] + 's'}</td>
-          <td><strong>${u.promPuntaje}</strong></td>
-          <td>${u.promTiempo}s</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
+                u.puntajes = [
+                    test1.score ?? null,
+                    test2.score ?? null,
+                    test3.score ?? null
+                ];
+                u.tiempos = [
+                    tiempoASegundos(test1.time ?? ""),
+                    tiempoASegundos(test2.time ?? ""),
+                    tiempoASegundos(test3.time ?? "")
+                ];
+                u.promPuntaje = promedio(u.puntajes.map(x => x ?? NaN));
+                u.promTiempo = promedio(u.tiempos);
+                usuarios.push(u);
+            });
 
-    window.onload = cargarRanking;
-  </script>
+            usuarios.sort((a, b) => {
+                const p1 = parseFloat(b.promPuntaje);
+                const p2 = parseFloat(a.promPuntaje);
+                if (p1 !== p2) return p1 - p2;
+                return parseFloat(a.promTiempo) - parseFloat(b.promTiempo);
+            });
+
+            const tbody = document.querySelector("#rankingTable tbody");
+            tbody.innerHTML = "";
+            usuarios.forEach((u, i) => {
+                const tr = document.createElement("tr");
+                if (i === 0) tr.classList.add("top");
+                tr.innerHTML = `
+                    <td>${i + 1}</td>
+                    <td>${u.nombre}</td>
+                    <td>${u.puntajes[0] ?? '—'} / ${isNaN(u.tiempos[0]) ? '—' : u.tiempos[0] + 's'}</td>
+                    <td>${u.puntajes[1] ?? '—'} / ${isNaN(u.tiempos[1]) ? '—' : u.tiempos[1] + 's'}</td>
+                    <td>${u.puntajes[2] ?? '—'} / ${isNaN(u.tiempos[2]) ? '—' : u.tiempos[2] + 's'}</td>
+                    <td><strong>${u.promPuntaje}</strong></td>
+                    <td>${u.promTiempo}s</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.onload = cargarRanking;
+    </script>
 
 </body>
 </html>
-
