@@ -70,19 +70,22 @@
   <a class="button" id="finishBtn" onclick="finishQuiz()" style="display:none;">Finalizar</a>
   <div id="result"></div>
 
-  <script>
-    // === Configuración Firebase ===
-    const firebaseConfig = {
-      apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
             authDomain: "base-de-datos-usuarios-433da.firebaseapp.com",
             projectId: "base-de-datos-usuarios-433da",
             storageBucket: "base-de-datos-usuarios-433da.appspot.com",
             messagingSenderId: "563969031549",
             appId: "1:563969031549:web:66c35b0e769d73b31d2014"
-    };
+        };
 
-    const app = initializeApp(firebaseConfig);
+        const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+
 
     // === Preguntas ===
     const questions = [
