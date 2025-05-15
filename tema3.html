@@ -2,325 +2,134 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Inicio</title>
-
+  <title>Ranking de Usuarios</title>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
   <style>
     body {
-      margin: 0;
-      font-family: sans-serif;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .barra-superior {
-      display: flex;
-      align-items: center;
-      background-color: #69a942;
-      padding: 0 20px;
-    }
-
-    .barra-superior .logo img {
-      height: 70px;
-      display: block;
-    }
-
-    .barra-superior .logous img {
-      height: 50px;
-      display: block;
-      border-radius: 50%;
-    }
-
-    .barra-superior .enlaces {
-      display: flex;
-      gap: 30px;
-      margin-left: auto;
-      margin-right: 20px;
-    }
-
-    .barra-superior .enlaces a {
-      text-decoration: none;
-      color: black;
-      font-weight: bold;
-      line-height: 70px;
-    }
-
-    .barra-inferior {
-      display: flex;
-      align-items: center;
-      background-color: #abd194;
-      padding: 10px 20px;
-      gap: 20px;
-    }
-
-    .barra-inferior a {
-      text-decoration: none;
-      color: black;
-      font-weight: bold;
-    }
-
-    .dropdown {
-      position: relative;
-      display: inline-block;
-    }
-
-    .dropdown-content {
-      display: none;
-      position: absolute;
-      right: 0;
-      background-color: #ffffff;
-      box-shadow: 0px 2px 8px rgba(0,0,0,0.2);
-      padding: 10px;
-      z-index: 1;
-      border-radius: 5px;
-      min-width: 150px;
-    }
-
-    .dropdown-content a {
-      display: block;
-      padding: 5px 10px;
-      text-decoration: none;
-      color: black;
-    }
-
-    .dropdown-content a:hover {
-      background-color: #f0f0f0;
-    }
-
-    .dropdown:hover .dropdown-content {
-      display: block;
-    }
-
-    .contenedor-central {
-      flex: 1;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
+      background-color: #e9f5ec;
+      font-family: Arial, sans-serif;
       padding: 20px;
     }
-
-    .barra-derecha {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      padding: 20px;
-      width: 350px;
-      background-color: #ecffe1;
+    h1 {
+      text-align: center;
+      color: #2e7d32;
     }
-
-    .video-texto {
+    table {
       width: 100%;
-      height: 250px;
-      background-color: #abd194;
-      border-radius: 10px;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: white;
+    }
+    th, td {
+      border: 1px solid #c8e6c9;
       padding: 10px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      text-align: center;
     }
-
-    .video-texto iframe {
-      width: 100%;
-      height: 150px;
-      border-radius: 10px;
+    th {
+      background-color: #a5d6a7;
+      color: #1b5e20;
     }
-
-    .video-texto p {
-      font-size: 14px;
-      margin: 0;
-      padding-top: 10px;
+    tr:nth-child(even) {
+      background-color: #f1f8e9;
     }
-
-    .dropdown-vertical {
-      width: 100%;
-      position: relative;
-    }
-
-    .dropbtn-vertical {
-      width: 100%;
-      background-color: #ffffff;
-      color: black;
+    .top {
+      background-color: #c5e1a5 !important;
       font-weight: bold;
-      padding: 10px;
-      font-size: 14px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      cursor: pointer;
-      text-align: left;
-    }
-
-    .dropdown-content-vertical {
-      display: none;
-      position: relative;
-      background-color: #ffffff;
-      margin-top: 5px;
-      box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
-      border-radius: 5px;
-      overflow: hidden;
-      z-index: 1;
-    }
-
-    .dropdown-content-vertical a {
-      display: block;
-      padding: 10px;
-      text-decoration: none;
-      color: black;
-      font-size: 14px;
-      border-bottom: 1px solid #f0f0f0;
-    }
-
-    .dropdown-content-vertical a:hover {
-      background-color: #f0f0f0;
-      color: #4CAF50;
-    }
-
-    .contenido {
-      flex: 1;
-      padding: 40px;
-      max-width: 800px;
-    }
-
-    section {
-      margin-bottom: 100px;
-    }
-
-    h2 {
-      margin-top: 60px;
-    }
-
-    .contenido-principal {
-      flex: 2;
-      padding: 20px;
-    }
-
-    .layout {
-      display: flex;
-      align-items: flex-start;
-    }
-
-    .barra-lateral {
-      display: none;
     }
   </style>
 </head>
-
 <body>
 
-  <div class="barra-superior">
-    <div class="logo">
-      <img src="logoutrahd.png" alt="Logo">
-    </div>
-    <div class="enlaces">
-      <a href="#">Ayuda</a>
-      <a href="#">Contacto</a>
-    </div>
-    <div class="logous">
-      <img src="usuarioo.png" alt="Usuario">
-    </div>
-  </div>
+  <h1>Ranking de Usuarios</h1>
+  <table id="rankingTable">
+    <thead>
+      <tr>
+        <th>Posición</th>
+        <th>Usuario</th>
+        <th>Test 1 (Puntaje / Tiempo)</th>
+        <th>Test 2 (Puntaje / Tiempo)</th>
+        <th>Test 3 (Puntaje / Tiempo)</th>
+        <th>Prom. Puntaje</th>
+        <th>Prom. Tiempo</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-  <nav class="barra-inferior">
-    <a href="seleccion.html">Home</a>
-    <div class="dropdown">
-      <a href="test3.html">Test</a>
-    </div>
-    <div class="dropdown">
-      <a href="ley 3 juego.html">Material interactivo</a>
-    </div>
-  </nav>
+  <script>
+    // === Firebase Config ===
+    const firebaseConfig = {
+      apiKey: "TU_API_KEY",
+      authDomain: "TU_AUTH_DOMAIN",
+      projectId: "TU_PROJECT_ID",
+      storageBucket: "TU_BUCKET",
+      messagingSenderId: "TU_SENDER_ID",
+      appId: "TU_APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-  <div class="contenedor-central">
-    <div class="contenido">
+    // === Funciones ===
+    function tiempoASegundos(texto) {
+      const match = texto.match(/(\d+)m\s*(\d+)s/);
+      return match ? parseInt(match[1]) * 60 + parseInt(match[2]) : 9999;
+    }
 
-      <section id="ley3">
-        <h1>Tercera ley de Newton = -Reacción</h1>
-        <p>La tercera ley de Newton, conocida como la ley de acción y reacción, establece que por cada fuerza que aplica sobre un objeto, hay fuerza de igual magnitud pero en sentido contrario que actúa como respuesta.</p>
-        <h1>"A toda acción corresponde una reacción de igual magnitud y en sentido opuesto."</h1>
-        <p>Esto significa que las fuerzas siempre actúan en pares. No es posible ejercer una fuerza sin recibir respuesta. Aunque no siempre se note, la fuerza de reacción está presente en todo momento.</p>
-        <p>Cuando dos cuerpos interactúan, el primero ejerce una fuerza sobre el segundo, llamada fuerza de acción. Simultáneamente, el segundo cuerpo ejerce una fuerza sobre el primero, llamada fuerza de reacción. Estas fuerzas son iguales en magnitud pero opuestas en dirección, y actúan sobre objetos diferentes, lo que significa que no se anulan entre sí.</p>
-        <p>Por ejemplo, si empujas una pared con tu mano, tu mano ejerce una fuerza sobre la pared (acción), y la pared ejerce una fuerza igual y contraria sobre tu mano (reacción). Aunque la pared no se mueve, tú sientes la fuerza que esta ejerce sobre ti. Esto explica por qué no puedes atravesar paredes: la fuerza de reacción es tan fuerte como la que tú aplicas.</p>
-        
-        <h1>Importancia en el movimiento</h1>
-        <p>Esta ley es esencial para entender cómo se produce el movimiento y la interacción entre objetos. En el caso de un cohete, cuando los gases son expulsados hacia abajo con gran fuerza (acción), el cohete recibe una fuerza igual y opuesta hacia arriba (reacción), lo que le permite elevarse. Otro ejemplo cotidiano es caminar: tus pies empujan el suelo hacia atrás (acción) y el suelo empuja tus pies hacia adelante (reacción), permitiéndote avanzar.</p>
-        
-        <h1>Implicaciones Físicas</h1>
-        <p>
-          - <strong>Fuerzas en pares:</strong> No existen fuerzas aisladas; siempre hay un par de fuerzas actuando entre dos cuerpos.<br>
-          - <strong>Dirección y magnitud:</strong> Las fuerzas de acción y reacción tienen la misma magnitud pero direcciones opuestas.<br>
-          - <strong>Objetos diferentes:</strong> Cada fuerza actúa sobre un objeto distinto, por lo que no se cancelan entre sí.
-        </p>
-        
-        <h1>Fórmula matemática</h1>
-        <p><strong>F₁₋₂ = –F₂₋₁</strong></p>
-        <ol>
-          <li>F₁₋₂: Fuerza que el objeto 1 ejerce sobre el objeto 2</li>
-          <li>F₂₋₁: Fuerza que el objeto 2 ejerce sobre el objeto 1</li>
-          <li>Ambas fuerzas tienen igual magnitud pero sentido opuesto</li>
-        </ol>
-        
-        <h1>Características clave</h1>
-        <ol>
-          <li>Las fuerzas de acción y reacción no se anulan porque actúan sobre cuerpos distintos.</li>
-          <li>Siempre ocurren al mismo tiempo.</li>
-          <li>Son iguales en intensidad, pero con dirección opuesta.</li>
-        </ol>
-        
-        <h1>🧪 Ejemplos prácticos</h1>
-        <ol>
-          <li>Empuje una pared
-            <ul>
-              <li>Tú aplicas una fuerza a la pared.</li>
-              <li>La pared te empuja hacia atrás con la misma fuerza, aunque no se mueva.</li>
-            </ul>
-          </li>
-          <li>Despegue de un cohete
-            <ul>
-              <li>El cohete expulsa gases hacia abajo (acción)</li>
-              <li>Como reacción, impulsa hacia arriba.</li>
-            </ul>
-          </li>
-          <li>Caminar
-            <ul>
-              <li>Empujas el suelo hacia atrás con tus pies (acción)</li>
-              <li>El suelo te empuja hacia adelante (reacción)</li>
-            </ul>
-          </li>
-        </ol>
+    function promedio(valores) {
+      const nums = valores.filter(v => !isNaN(v));
+      return nums.length ? (nums.reduce((a,b) => a + b, 0) / nums.length).toFixed(2) : 'N/A';
+    }
 
-        <p>La Tercera Ley de Newton nos muestra que las interacciones entre objetos son siempre recíprocas y equilibradas en términos de fuerza. Esta ley es fundamental para analizar sistemas físicos, desde la mecánica de objetos cotidianos hasta fenómenos complejos como el vuelo de aviones y el lanzamiento de cohetes. Entenderla nos permite comprender cómo y por qué los objetos se mueven o permanecen en equilibrio cuando interactúan entre sí.</p>
+    async function cargarRanking() {
+      const snapshot = await db.collection("resultados").get();
+      const usuarios = [];
 
-        <h1>Conclusión</h1>
-        <p>La tercera ley de Newton explica cómo funcionan muchos movimientos en nuestro entorno. Desde caminar, saltar o conducir un vehículo, hasta las tecnologías avanzadas como la propulsión espacial, todas dependen del principio de acción y reacción para generar movimiento y fuerza.</p>
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const u = { nombre: doc.id };
+        u.puntajes = [
+          data.test1?.puntaje ?? null,
+          data.test2?.puntaje ?? null,
+          data.test3?.puntaje ?? null
+        ];
+        u.tiempos = [
+          tiempoASegundos(data.test1?.tiempo ?? ""),
+          tiempoASegundos(data.test2?.tiempo ?? ""),
+          tiempoASegundos(data.test3?.tiempo ?? "")
+        ];
+        u.promPuntaje = promedio(u.puntajes.map(x => x ?? NaN));
+        u.promTiempo = promedio(u.tiempos);
+        usuarios.push(u);
+      });
 
-        <p><b>Recuerda:</b> no hay acción sin reacción. Son dos caras de la misma moneda.</p>
-      </section>
-    </div>
+      usuarios.sort((a, b) => {
+        const p1 = parseFloat(b.promPuntaje);
+        const p2 = parseFloat(a.promPuntaje);
+        if (p1 !== p2) return p1 - p2;
+        return parseFloat(a.promTiempo) - parseFloat(b.promTiempo);
+      });
 
-    <div class="barra-derecha">
-      <div class="video-texto">
-        <iframe src="https://www.youtube.com/embed/Yl66jyMiQDc" title="Video Ley 3 de Newton" allowfullscreen></iframe>
-        <p>Video explicativo sobre la Tercera Ley de Newton.</p>
-      </div>
+      const tbody = document.querySelector("#rankingTable tbody");
+      tbody.innerHTML = "";
+      usuarios.forEach((u, i) => {
+        const tr = document.createElement("tr");
+        if (i === 0) tr.classList.add("top");
+        tr.innerHTML = `
+          <td>${i + 1}</td>
+          <td>${u.nombre}</td>
+          <td>${u.puntajes[0] ?? '—'} / ${isNaN(u.tiempos[0]) ? '—' : u.tiempos[0] + 's'}</td>
+          <td>${u.puntajes[1] ?? '—'} / ${isNaN(u.tiempos[1]) ? '—' : u.tiempos[1] + 's'}</td>
+          <td>${u.puntajes[2] ?? '—'} / ${isNaN(u.tiempos[2]) ? '—' : u.tiempos[2] + 's'}</td>
+          <td><strong>${u.promPuntaje}</strong></td>
+          <td>${u.promTiempo}s</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
 
-      <div class="dropdown-vertical">
-        <button class="dropbtn-vertical">Tests disponibles</button>
-        <div class="dropdown-content-vertical">
-          <a href="test1.html">Test 1: Primera ley de Newton</a>
-          <a href="test2.html">Test 2: Segunda ley de Newton</a>
-          <a href="test3.html">Test 3: Tercera ley de Newton</a>
-        </div>
-      </div>
-
-      <div class="dropdown-vertical">
-        <button class="dropbtn-vertical">Leyes de Newton</button>
-        <div class="dropdown-content-vertical">
-          <a href="ley 1 juego.html">Primera ley</a>
-          <a href="ley2.html">Segunda ley</a>
-          <a href="ley 3 juego.html">Tercera ley</a>
-        </div>
-      </div>
-    </div>
-  </div>
+    window.onload = cargarRanking;
+  </script>
 
 </body>
 </html>
