@@ -60,16 +60,17 @@
   <script>
     // === Firebase Config ===
     const firebaseConfig = {
-      apiKey: "AIzaSyDQQLMza2AXs-ybrho_VjGWbRIB7DcjBwo",
-  authDomain: "base-de-datos-usuarios-433da.firebaseapp.com",
-  projectId: "base-de-datos-usuarios-433da",
-  storageBucket: "base-de-datos-usuarios-433da.firebasestorage.app",
-  messagingSenderId: "563969031549",
-  appId: "1:563969031549:web:66c35b0e769d73b31d2014"
+      apiKey: "TU_API_KEY",
+      authDomain: "TU_AUTH_DOMAIN",
+      projectId: "TU_PROJECT_ID",
+      storageBucket: "TU_BUCKET",
+      messagingSenderId: "TU_SENDER_ID",
+      appId: "TU_APP_ID"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // === Funciones auxiliares ===
     function tiempoASegundos(texto) {
       const match = texto.match(/(\d+)m\s*(\d+)s/);
       return match ? parseInt(match[1]) * 60 + parseInt(match[2]) : 9999;
@@ -80,16 +81,13 @@
       return nums.length ? (nums.reduce((a,b) => a + b, 0) / nums.length).toFixed(2) : 'N/A';
     }
 
+    // === Cargar y mostrar ranking ===
     async function cargarRanking() {
-      const snapshot = await db.collection("resultados").get();
-      console.log("¿Snapshot vacío?", snapshot.empty);  // Debug
-
+      const snapshot = await db.collection("usuarios").get(); // <-- CAMBIO AQUÍ
       const usuarios = [];
 
       snapshot.forEach(doc => {
         const data = doc.data();
-        console.log("Documento leído:", doc.id, data);  // Debug
-
         const u = { nombre: doc.id };
         u.puntajes = [
           data.test1?.puntaje ?? null,
@@ -136,3 +134,4 @@
 
 </body>
 </html>
+
